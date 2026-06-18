@@ -701,7 +701,7 @@ body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradi
   <div class="bb-sep"></div>
   <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">🎙 VOICE</button>
   <button class="bb-btn" id="wakeBtn" onclick="toggleWakeWord()" title="Say 'Hey TINO' to activate">👂 WAKE</button>
-  <button class="bb-btn accent" onclick="openModal('aiChatModal')">🤖 ASK T.I.N.O.</button>
+  
   <div class="soundwave" id="soundwave">
     <div class="sw-bar" style="height:3px"></div>
     <div class="sw-bar" style="height:9px"></div>
@@ -1931,6 +1931,15 @@ function addChatMessage(text,role){
   else el.textContent=text;
   messages.appendChild(el);
   messages.scrollTop=messages.scrollHeight;
+  if(role==='ai' && window.speechSynthesis){
+    window.speechSynthesis.cancel();
+    const utt=new SpeechSynthesisUtterance(text.replace(/\*\*/g,''));
+    utt.rate=1.05; utt.pitch=0.9; utt.volume=1;
+    const voices=window.speechSynthesis.getVoices();
+    const preferred=voices.find(v=>v.name.includes('Google US English')||v.name.includes('Alex')||v.name.includes('Samantha'));
+    if(preferred) utt.voice=preferred;
+    window.speechSynthesis.speak(utt);
+  }
 }
 
 function showTyping(){
