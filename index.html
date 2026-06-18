@@ -1286,6 +1286,16 @@ function initAll(){
   const notes=document.getElementById('quick-notes');
   notes.value=localStorage.getItem('tino_notes')||'';
   notes.addEventListener('blur',()=>localStorage.setItem('tino_notes',notes.value));
+  setTimeout(deliverBriefing,3000);
+}
+
+function deliverBriefing(){
+  const h=new Date().getHours();
+  const greeting=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  const leads=S.leads.length;
+  const streak=S.streak;
+  const msg=greeting+' Agustin. T I N O online. '+leads+' lead'+(leads!==1?'s':'')+' in pipeline. '+streak+' day streak. Revenue target: 680 dollars. Lets close today.';
+  speak(msg);
 }
 
 // ── CLOCK ──────────────────────────────────────
@@ -1805,7 +1815,16 @@ function handleVoiceCmd(cmd){
   else if(cmd.includes('proposal')){ openModal('proposalModal'); showNotif('PROPOSAL GENERATOR OPEN','success'); }
   else if(cmd.includes('outreach')||cmd.includes('visit')||cmd.includes('log')){ logOutreach(); }
   else if(cmd.includes('make')||cmd.includes('automation')){ window.open('https://make.com','_blank'); showNotif('OPENING MAKE.COM','success'); }
-  else{ showNotif('NOT RECOGNIZED: "'+cmd+'" — TRY AGAIN',''); addLog('VOICE','warn','Unknown: '+cmd); }
+  else{
+    // Send to T.I.N.O. AI
+    addLog('VOICE','ok','Sending to AI: "'+cmd+'"');
+    showNotif('ASKING T.I.N.O...','success');
+    openAIChat();
+    setTimeout(()=>{
+      document.getElementById('aiChatInput').value=cmd;
+      sendAIMessage();
+    },300);
+  }
 }
 
 function toggleWakeWord(){
@@ -1923,6 +1942,30 @@ async function sendAIMessage(){
   }
 }
 
+function cleanForSpeech(text){
+  return text
+    .replace(/\*\*/g,'').replace(/\*/g,'').replace(/#/g,'')
+    .replace(/[\u{1F000}-\u{1FFFF}]/gu,'')
+    .replace(/[\u{2600}-\u{27BF}]/gu,'')
+    .replace(/[^\x00-\x7F]/g,'')
+    .replace(/\s+/g,' ').trim();
+}
+function speak(text){
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const clean=cleanForSpeech(text);
+  if(!clean) return;
+  const utt=new SpeechSynthesisUtterance(clean);
+  utt.rate=1.0; utt.pitch=0.85; utt.volume=1;
+  function setVoice(){
+    const voices=window.speechSynthesis.getVoices();
+    const v=voices.find(v=>v.name==='Google US English')||voices.find(v=>v.name.includes('Alex'))||voices.find(v=>v.name.includes('Samantha'))||voices.find(v=>v.lang==='en-US');
+    if(v) utt.voice=v;
+    window.speechSynthesis.speak(utt);
+  }
+  if(window.speechSynthesis.getVoices().length>0) setVoice();
+  else{ window.speechSynthesis.onvoiceschanged=setVoice; }
+}
 function addChatMessage(text,role){
   const messages=document.getElementById('aiChatMessages');
   const el=document.createElement('div');
@@ -1931,15 +1974,7 @@ function addChatMessage(text,role){
   else el.textContent=text;
   messages.appendChild(el);
   messages.scrollTop=messages.scrollHeight;
-  if(role==='ai' && window.speechSynthesis){
-    window.speechSynthesis.cancel();
-    const utt=new SpeechSynthesisUtterance(text.replace(/\*\*/g,''));
-    utt.rate=1.05; utt.pitch=0.9; utt.volume=1;
-    const voices=window.speechSynthesis.getVoices();
-    const preferred=voices.find(v=>v.name.includes('Google US English')||v.name.includes('Alex')||v.name.includes('Samantha'));
-    if(preferred) utt.voice=preferred;
-    window.speechSynthesis.speak(utt);
-  }
+  if(role==='ai') speak(text);
 }
 
 function showTyping(){
