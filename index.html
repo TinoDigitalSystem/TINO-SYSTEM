@@ -1906,9 +1906,11 @@ async function sendAIMessage(){
     });
     hideTyping();
     if(res.ok){
-      const data=await res.json();
-      addChatMessage(data.reply,'ai');
-      aiHistory.push({role:'assistant',content:data.reply});
+      let data=await res.json();
+      if(typeof data === 'string') try{ data=JSON.parse(data); }catch(e){}
+      const reply = data.content?.[0]?.text || data.reply || 'No response.';
+      addChatMessage(reply,'ai');
+      aiHistory.push({role:'assistant',content:reply});
     } else {
       addChatMessage('API error — make sure the Netlify function is deployed and ANTHROPIC_API_KEY is set.','ai');
     }
@@ -1964,8 +1966,10 @@ async function sendAIMessage(){
         messages: aiMessages
       })
     });
-    const data = await r.json();
-    const reply = data.content[0].text;
+    const raw = await r.text();
+    let data;
+    try{ data = JSON.parse(raw); }catch(e){ data = JSON.parse(JSON.parse(raw)); }
+    const reply = data?.content?.[0]?.text || data?.content || 'No response received';
     aiMessages.push({role:'assistant', content: reply});
     history.innerHTML += `<div style="margin-top:8px;border-top:1px solid rgba(72,255,130,0.1);padding-top:8px;"><span style="color:var(--gold);">T.I.N.O.:</span> <span style="color:rgba(72,255,130,0.75);">${reply}</span></div>`;
     history.scrollTop = history.scrollHeight;
