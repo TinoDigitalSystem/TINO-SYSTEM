@@ -1,182 +1,2139 @@
-T.I.N.O.
-TINO INTELLIGENCE & NETWORK OPERATIONS
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T.I.N.O. — Tino Digital Systems</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #061a10;
+  --panel: rgba(8,32,18,0.95);
+  --green: #48ff82;
+  --green2: rgba(72,255,130,0.55);
+  --dim: rgba(72,255,130,0.28);
+  --border: rgba(72,255,130,0.18);
+  --gold: #ffd700;
+  --red: #ff4455;
+  --blue: #00e5ff;
+  --mono: 'Share Tech Mono', monospace;
+  --orb: 'Orbitron', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:var(--bg);font-family:var(--mono);color:var(--green);overflow:hidden;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(72,255,130,0.008) 3px,rgba(72,255,130,0.008) 4px);pointer-events:none;z-index:9999;}
+
+/* LAYOUT */
+#app{display:grid;grid-template-columns:240px 1fr 240px;height:calc(100vh - 80px);overflow:hidden;}
+.panel{background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;overflow-x:hidden;padding:10px 8px;}
+.panel::-webkit-scrollbar{width:2px;}
+.panel::-webkit-scrollbar-thumb{background:var(--dim);}
+#center{background:var(--bg);display:flex;flex-direction:column;align-items:center;gap:10px;overflow-y:auto;padding:14px 10px 10px;border-left:1px solid var(--border);border-right:1px solid var(--border);}
+#center::-webkit-scrollbar{width:2px;}
+#center::-webkit-scrollbar-thumb{background:var(--dim);}
+#sidebar-right{border-right:none;}
+
+/* SECTION HEADER */
+.sh{font-size:7px;letter-spacing:3px;color:var(--green);opacity:0.6;border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:8px;margin-top:12px;text-transform:uppercase;}
+.sh:first-child{margin-top:0;}
+
+/* VITALS */
+.vrow{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid rgba(72,255,130,0.06);font-size:8px;}
+.vrow:last-child{border-bottom:none;}
+.vlbl{color:var(--green2);}
+.vval{color:var(--green);font-size:11px;text-shadow:0 0 8px rgba(72,255,130,0.5);}
+
+/* STAT CARDS */
+.stats-row{display:flex;gap:8px;width:100%;}
+.stat-card{flex:1;background:rgba(72,255,130,0.05);border:1px solid var(--border);padding:10px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.stat-card:hover{background:rgba(72,255,130,0.1);border-color:var(--green);}
+.stat-card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--green),transparent);animation:scan 4s linear infinite;}
+.snum{font-size:26px;color:var(--green);font-family:var(--orb);font-weight:700;text-shadow:0 0 15px rgba(72,255,130,0.6);}
+.slbl{font-size:6px;color:var(--green2);letter-spacing:2px;margin-top:3px;}
+.schange{font-size:7px;color:var(--gold);margin-top:2px;}
+
+/* CLOCK */
+.clock-wrap{text-align:center;width:100%;}
+.main-clock{font-size:58px;color:var(--green);font-family:var(--orb);font-weight:900;letter-spacing:3px;text-shadow:0 0 30px rgba(72,255,130,0.7),0 0 60px rgba(72,255,130,0.2);line-height:1;}
+.main-date{font-size:10px;color:var(--green2);letter-spacing:4px;margin-top:4px;}
+.main-brand{font-size:7px;color:var(--dim);letter-spacing:6px;margin-top:3px;}
+
+/* RADAR */
+.radar-wrap{position:relative;width:280px;height:280px;}
+.radar-canvas{width:100%;height:100%;}
+.radar-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
+.radar-status{font-size:10px;color:var(--green);letter-spacing:4px;animation:pulse 1.5s ease-in-out infinite;text-shadow:0 0 10px rgba(72,255,130,0.8);}
+.radar-sub{font-size:7px;color:var(--green2);letter-spacing:2px;margin-top:3px;}
+
+/* MISSION */
+.mission-wrap{width:100%;background:rgba(72,255,130,0.04);border:1px solid var(--border);padding:10px 14px;}
+.mission-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.mission-title{font-size:7px;letter-spacing:3px;color:var(--green2);}
+.mission-amt{font-size:18px;color:var(--green);font-family:var(--orb);}
+.mission-track{background:rgba(72,255,130,0.06);border:1px solid var(--border);height:12px;overflow:hidden;position:relative;}
+.mission-fill{height:100%;background:linear-gradient(90deg,rgba(72,255,130,0.4),var(--green));width:0%;transition:width 1.5s ease;box-shadow:0 0 10px rgba(72,255,130,0.4);}
+.mission-note{font-size:7px;color:var(--dim);margin-top:4px;letter-spacing:1px;}
+
+/* XP */
+.xp-wrap{width:100%;padding:0 4px;}
+.xp-label{font-size:8px;color:var(--green);letter-spacing:2px;text-align:center;margin-bottom:5px;}
+.xp-track{background:rgba(72,255,130,0.06);border:1px solid var(--border);height:7px;overflow:hidden;}
+.xp-fill{height:100%;background:linear-gradient(90deg,rgba(72,255,130,0.4),var(--green));width:0%;transition:width 0.5s;}
+.xp-note{font-size:7px;color:var(--dim);text-align:center;margin-top:3px;}
+
+/* QUICK LAUNCH */
+.ql-wrap{display:flex;gap:6px;width:100%;}
+.ql-btn{flex:1;font-family:var(--mono);font-size:8px;letter-spacing:1px;padding:9px 4px;background:rgba(72,255,130,0.07);border:1px solid rgba(72,255,130,0.35);color:var(--green);cursor:pointer;transition:all .2s;text-align:center;}
+.ql-btn:hover{background:rgba(72,255,130,0.2);box-shadow:0 0 14px rgba(72,255,130,0.3);}
+
+/* BUTTONS */
+.g-btn{font-family:var(--mono);font-size:8px;letter-spacing:1px;padding:5px 8px;background:rgba(72,255,130,0.06);border:1px solid var(--border);color:var(--green2);cursor:pointer;transition:all .2s;text-align:center;}
+.g-btn:hover{background:rgba(72,255,130,0.18);color:var(--green);border-color:var(--green);}
+.g-btn.full{width:100%;margin-top:5px;}
+.g-btn.accent{border-color:rgba(72,255,130,0.45);color:var(--green);}
+.g-btn.danger{border-color:rgba(255,68,85,0.4);color:var(--red);}
+
+/* TOOLS GRID */
+.tools-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;}
+.tool-btn{font-family:var(--mono);font-size:7px;letter-spacing:0;padding:6px 4px;background:rgba(72,255,130,0.04);border:1px solid rgba(72,255,130,0.14);color:rgba(72,255,130,0.55);cursor:pointer;transition:all .2s;text-align:center;line-height:1.3;}
+.tool-btn:hover{background:rgba(72,255,130,0.14);color:var(--green);border-color:var(--green);}
+
+/* OUTREACH */
+.outreach-big{font-size:32px;color:var(--green);font-family:var(--orb);text-align:center;text-shadow:0 0 14px rgba(72,255,130,0.6);}
+.pbar{background:rgba(72,255,130,0.07);border:1px solid var(--border);height:5px;margin:5px 0;}
+.pbar-fill{height:100%;background:linear-gradient(90deg,rgba(72,255,130,0.4),var(--green));transition:width .5s;}
+.btn-row{display:flex;gap:4px;margin-top:6px;}
+
+/* CHECKLIST */
+.check-item{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid rgba(72,255,130,0.06);font-size:8px;color:var(--green2);cursor:pointer;}
+.check-item:last-child{border-bottom:none;}
+.check-item input{accent-color:var(--green);width:10px;height:10px;flex-shrink:0;}
+.check-item.done span{color:var(--dim);text-decoration:line-through;}
+
+/* LEAD ITEMS */
+.lead-item{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid rgba(72,255,130,0.06);font-size:8px;}
+.lead-biz{color:var(--green);}
+.lead-tag{font-size:6px;padding:1px 5px;letter-spacing:1px;}
+.lt-hot{background:rgba(255,68,85,0.1);color:var(--red);}
+.lt-interested{background:rgba(255,215,0,0.1);color:var(--gold);}
+.lt-followup{background:rgba(0,229,255,0.1);color:var(--blue);}
+.lt-contacted{background:rgba(72,255,130,0.08);color:var(--green2);}
+
+/* WEATHER */
+.weather-temp{font-size:28px;color:var(--green);font-family:var(--orb);}
+.weather-desc{font-size:8px;color:var(--green2);letter-spacing:1px;margin:2px 0;}
+.weather-tip{font-size:8px;color:var(--gold);margin-top:5px;border-top:1px solid var(--border);padding-top:4px;}
+
+/* COUNTDOWN */
+.cd-time{font-size:20px;color:var(--gold);font-family:var(--orb);text-align:center;}
+.cd-lbl{font-size:7px;color:rgba(255,215,0,0.5);letter-spacing:2px;text-align:center;margin-top:2px;}
+
+/* STREAK */
+.streak-num{font-size:34px;color:var(--gold);text-align:center;font-family:var(--orb);text-shadow:0 0 12px rgba(255,215,0,0.4);}
+.streak-lbl{font-size:7px;color:rgba(255,215,0,0.4);letter-spacing:2px;text-align:center;}
+
+/* MONEY */
+.money-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(72,255,130,0.06);font-size:8px;}
+.money-lbl{color:var(--green2);}
+.money-val{color:var(--green);}
+.money-val.big{font-size:14px;font-family:var(--orb);}
+.money-val.neg{color:var(--red);}
+.split-note{font-size:7px;color:var(--dim);margin-top:5px;line-height:1.8;letter-spacing:1px;}
+
+/* MILESTONE */
+.ms-row{padding:4px 0;border-bottom:1px solid rgba(72,255,130,0.06);}
+.ms-hdr{display:flex;justify-content:space-between;margin-bottom:3px;font-size:8px;}
+.ms-lbl{color:var(--green2);}
+.ms-val{color:var(--green);}
+.ms-bar{height:3px;background:rgba(72,255,130,0.07);}
+.ms-fill{height:100%;background:linear-gradient(90deg,rgba(72,255,130,0.4),var(--green));transition:width 1s;}
+
+/* LOG */
+.diag-log{height:180px;overflow:hidden;font-size:8px;line-height:2;}
+.log-line{display:flex;gap:5px;}
+.log-t{color:var(--dim);font-size:7px;flex-shrink:0;}
+.log-ok{color:var(--green);}
+.log-warn{color:var(--gold);}
+.log-alert{color:var(--red);}
+.log-money{color:var(--blue);}
+.log-msg{color:var(--green2);}
+
+/* PITCH */
+.pitch-block{margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.pitch-block:last-child{border-bottom:none;}
+.pitch-lbl{font-size:7px;letter-spacing:2px;color:var(--green);margin-bottom:4px;}
+.pitch-text{font-size:9px;color:rgba(72,255,130,0.75);line-height:1.7;font-style:italic;}
+.copy-btn{font-family:var(--mono);font-size:7px;letter-spacing:1px;padding:3px 8px;background:rgba(72,255,130,0.07);border:1px solid var(--border);color:var(--green2);cursor:pointer;margin-top:5px;transition:all .2s;}
+.copy-btn:hover,.copy-btn.copied{color:var(--green);border-color:var(--green);}
+
+/* OBJ */
+.obj-card{padding:8px;margin-bottom:5px;background:rgba(72,255,130,0.03);border:1px solid rgba(72,255,130,0.13);cursor:pointer;transition:all .2s;}
+.obj-card:hover{background:rgba(72,255,130,0.09);border-color:var(--green);}
+.obj-q{font-size:7px;letter-spacing:2px;color:var(--green);margin-bottom:3px;}
+.obj-a{font-size:9px;color:rgba(72,255,130,0.72);line-height:1.5;font-style:italic;}
+
+/* FORM */
+.f-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;}
+.f-row label{font-size:8px;color:var(--green2);min-width:90px;flex-shrink:0;}
+.f-inp{background:rgba(4,16,9,0.9);border:1px solid var(--border);color:var(--green);font-family:var(--mono);font-size:9px;padding:5px 8px;outline:none;width:100%;}
+.f-inp:focus{border-color:rgba(72,255,130,0.5);}
+.f-sel{background:rgba(4,16,9,0.9);border:1px solid var(--border);color:var(--green);font-family:var(--mono);font-size:8px;padding:4px;outline:none;}
+
+/* OVERLAY */
+.tino-overlay{position:fixed;inset:0;background:rgba(3,14,8,0.94);z-index:800;display:none;align-items:center;justify-content:center;padding:20px;}
+.tino-overlay.open{display:flex;}
+.tino-modal{background:#061a10;border:1px solid rgba(72,255,130,0.4);box-shadow:0 0 40px rgba(72,255,130,0.12);width:100%;max-width:520px;max-height:88vh;overflow-y:auto;position:relative;}
+.tino-modal::-webkit-scrollbar{width:2px;}
+.tino-modal::-webkit-scrollbar-thumb{background:var(--dim);}
+.modal-hdr{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-bottom:1px solid var(--border);font-size:10px;letter-spacing:2px;color:var(--green);position:sticky;top:0;background:#061a10;z-index:1;}
+.modal-hdr button{background:none;border:none;color:var(--dim);cursor:pointer;font-size:16px;}
+.modal-hdr button:hover{color:var(--red);}
+.modal-body{padding:14px;}
+
+/* NOTIF */
+.notif{position:fixed;top:14px;right:14px;background:rgba(4,14,8,0.97);border:1px solid var(--red);padding:11px 14px;font-size:10px;color:var(--red);z-index:1000;display:none;max-width:260px;letter-spacing:1px;}
+.notif.visible{display:block;}
+.notif.money{border-color:var(--blue);color:var(--blue);}
+.notif.goal{border-color:var(--gold);color:var(--gold);}
+.notif.success{border-color:var(--green);color:var(--green);}
+
+/* AI */
+.ai-response{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:rgba(4,14,8,0.97);border:1px solid rgba(72,255,130,0.4);padding:12px 16px;max-width:600px;width:92%;z-index:600;display:none;}
+.ai-response.visible{display:block;}
+.ai-label{font-size:8px;color:var(--dim);letter-spacing:2px;margin-bottom:6px;}
+.ai-text{font-size:11px;color:var(--green);line-height:1.6;}
+.ai-close{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--dim);cursor:pointer;font-size:14px;}
+
+/* BOOT */
+#boot{position:fixed;inset:0;background:#020d05;z-index:9990;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.boot-logo{font-family:var(--orb);font-size:36px;letter-spacing:10px;color:var(--green);text-shadow:0 0 40px rgba(72,255,130,0.9);margin-bottom:8px;animation:fadeUp 0.6s 0.2s both;}
+.boot-sub{font-size:8px;letter-spacing:5px;color:var(--green2);margin-bottom:24px;animation:fadeUp 0.4s 0.6s both;}
+.boot-lines{width:min(380px,90vw);}
+.boot-line{font-size:8px;color:var(--green2);letter-spacing:1px;padding:2px 0;opacity:0;transform:translateX(-6px);transition:all 0.18s;}
+.boot-line.show{opacity:1;transform:none;}
+.boot-line .ok{color:var(--green);float:right;}
+.boot-bar-wrap{width:min(380px,90vw);margin-top:16px;animation:fadeUp 0.4s 0.9s both;}
+.boot-bar-bg{height:2px;background:rgba(72,255,130,0.1);border:1px solid rgba(72,255,130,0.15);}
+.boot-bar-fill{height:100%;background:linear-gradient(90deg,rgba(72,255,130,0.4),var(--green));width:0%;transition:width 0.04s linear;}
+.boot-pct{font-size:8px;color:var(--dim);text-align:right;margin-top:3px;letter-spacing:2px;}
+
+/* TICKER */
+#ticker{background:rgba(3,12,6,0.98);border-top:1px solid rgba(72,255,130,0.12);height:22px;display:flex;align-items:center;overflow:hidden;position:fixed;bottom:58px;left:0;right:0;z-index:490;}
+.ticker-lbl{font-size:7px;letter-spacing:2px;color:var(--green);padding:0 10px;border-right:1px solid var(--border);white-space:nowrap;flex-shrink:0;height:100%;display:flex;align-items:center;}
+.ticker-outer{overflow:hidden;flex:1;}
+.ticker-track{display:flex;white-space:nowrap;animation:tickerScroll 50s linear infinite;}
+.ticker-item{font-size:7px;color:var(--green2);letter-spacing:1px;padding:0 20px;}
+
+/* BOTTOM BAR */
+#bottom-bar{height:58px;background:rgba(3,12,6,0.98);border-top:1px solid var(--border);display:flex;align-items:center;gap:5px;padding:0 10px;position:fixed;bottom:0;left:0;right:0;z-index:500;flex-shrink:0;}
+.bb-btn{font-family:var(--mono);font-size:7px;letter-spacing:1px;padding:5px 9px;background:rgba(72,255,130,0.06);border:1px solid rgba(72,255,130,0.2);color:var(--green2);cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0;}
+.bb-btn:hover{background:rgba(72,255,130,0.18);color:var(--green);border-color:var(--green);}
+.bb-btn.accent{border-color:rgba(72,255,130,0.5);color:var(--green);}
+.bb-sep{width:1px;height:28px;background:var(--border);flex-shrink:0;}
+.voice-btn{font-family:var(--mono);font-size:8px;letter-spacing:2px;padding:6px 12px;background:rgba(72,255,130,0.07);border:1px solid rgba(72,255,130,0.35);color:var(--green);cursor:pointer;transition:all .2s;white-space:nowrap;}
+.voice-btn.listening{border-color:rgba(255,68,85,0.8);color:var(--red);box-shadow:0 0 14px rgba(255,68,85,0.4);}
+.soundwave{display:flex;align-items:center;justify-content:center;gap:2px;height:14px;opacity:0;transition:opacity .3s;}
+.soundwave.active{opacity:1;}
+.sw-bar{width:2px;background:var(--green);border-radius:1px;animation:swAnim 0.6s ease-in-out infinite;}
+.sw-bar:nth-child(2){animation-delay:.1s;} .sw-bar:nth-child(3){animation-delay:.2s;} .sw-bar:nth-child(4){animation-delay:.3s;} .sw-bar:nth-child(5){animation-delay:.15s;}
+
+/* POMO */
+.pomo-clock{font-size:24px;color:var(--green);font-family:var(--orb);letter-spacing:2px;text-align:center;}
+.pomo-mode{font-size:7px;color:var(--green2);letter-spacing:2px;text-align:center;margin-top:2px;}
+.pomo-btns{display:flex;gap:5px;justify-content:center;margin-top:6px;}
+
+/* CERTS */
+.cert-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(72,255,130,0.06);}
+.cert-name{font-size:8px;color:var(--green2);}
+.cert-badge{font-size:6px;padding:1px 4px;border:1px solid rgba(72,255,130,0.2);color:var(--dim);letter-spacing:1px;}
+.cert-badge.done{border-color:var(--green);color:var(--green);}
+
+/* PROSPECT */
+.prospect-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(72,255,130,0.06);font-size:8px;gap:5px;}
+.p-biz{color:var(--green);flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.p-status{padding:1px 4px;border:1px solid;font-size:6px;letter-spacing:1px;}
+.ps-interested{color:var(--gold);border-color:var(--gold);}
+.ps-contacted{color:var(--green);border-color:rgba(72,255,130,0.4);}
+.ps-followup{color:var(--blue);border-color:var(--blue);}
+.ps-no{color:var(--dim);border-color:rgba(72,255,130,0.2);}
+
+/* UPSELL */
+.upsell-row{padding:6px;margin-bottom:5px;background:rgba(72,255,130,0.03);border:1px solid rgba(72,255,130,0.1);}
+.upsell-name{font-size:9px;color:var(--green);margin-bottom:3px;}
+.upsell-tags{display:flex;gap:4px;flex-wrap:wrap;}
+.upsell-tag{font-size:7px;padding:1px 5px;border:1px solid;letter-spacing:1px;}
+.ut-due{color:var(--red);border-color:var(--red);animation:pulse 1.5s ease-in-out infinite;}
+.ut-soon{color:var(--gold);border-color:var(--gold);}
+.ut-ok{color:var(--dim);border-color:rgba(72,255,130,0.15);}
+
+/* WIN LOG */
+.win-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(72,255,130,0.06);}
+.win-text{font-size:9px;color:rgba(72,255,130,0.75);flex:1;}
+.win-date{font-size:7px;color:var(--dim);}
+
+/* AREA */
+.area-row{display:flex;align-items:flex-start;gap:6px;padding:5px 0;border-bottom:1px solid rgba(72,255,130,0.06);}
+.area-name{font-size:8px;color:var(--green);min-width:72px;}
+.area-meta{font-size:7px;color:var(--green2);flex:1;line-height:1.5;}
+.area-score{font-size:6px;padding:1px 5px;border:1px solid;letter-spacing:1px;white-space:nowrap;}
+.as-hot{color:var(--red);border-color:var(--red);}
+.as-good{color:var(--green);border-color:var(--green);}
+.as-premium{color:var(--gold);border-color:var(--gold);}
+.as-untapped{color:var(--blue);border-color:var(--blue);}
+
+/* QUICK NOTES */
+#quick-notes{width:100%;background:rgba(4,16,9,0.9);border:1px solid var(--border);color:var(--green);font-family:var(--mono);font-size:8px;padding:6px;resize:vertical;min-height:70px;outline:none;letter-spacing:1px;line-height:1.5;}
+
+.del-check-btn{background:none;border:none;color:var(--dim);cursor:pointer;font-size:9px;margin-left:auto;padding:0 2px;flex-shrink:0;line-height:1;}
+.del-check-btn:hover{color:var(--red);}
+.lead-del{background:none;border:none;color:var(--dim);cursor:pointer;font-size:9px;margin-left:4px;padding:0;flex-shrink:0;}
+.lead-del:hover{color:var(--red);}
+.lead-status{cursor:pointer;} 
+.lead-status:hover{opacity:0.7;}
+
+/* GREETING */
+.main-greeting{font-size:10px;color:var(--green2);letter-spacing:4px;text-align:center;margin-bottom:4px;animation:pulse 3s ease-in-out infinite;}
+
+/* WEATHER INLINE */
+.weather-inline{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;font-size:12px;color:var(--green);}
+.weather-icon{font-size:18px;}
+
+/* STREAK FIRE */
+.streak-fire{display:inline-block;margin-left:4px;animation:pulse 0.8s ease-in-out infinite;font-size:16px;}
+
+/* TERMINAL CURSOR */
+.cursor{display:inline-block;width:6px;height:12px;background:var(--green);animation:blink 1s step-end infinite;vertical-align:middle;margin-left:2px;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+/* GLOW PULSE on stat cards */
+.stat-card.glow-gold{animation:glowGold 0.8s ease-out;}
+.stat-card.glow-green{animation:glowGreen 0.8s ease-out;}
+@keyframes glowGold{0%{box-shadow:0 0 30px rgba(255,215,0,0.8);border-color:var(--gold);}100%{box-shadow:none;border-color:var(--border);}}
+@keyframes glowGreen{0%{box-shadow:0 0 30px rgba(72,255,130,0.8);border-color:var(--green);}100%{box-shadow:none;border-color:var(--border);}}
+
+/* RADAR PULSE RING */
+.radar-pulse{position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(72,255,130,0.3);animation:radarPulse 2s ease-out infinite;}
+.radar-pulse:nth-child(2){animation-delay:0.7s;}
+.radar-pulse:nth-child(3){animation-delay:1.4s;}
+@keyframes radarPulse{0%{transform:scale(0.95);opacity:0.6;}100%{transform:scale(1.08);opacity:0;}}
+
+/* MISSION BAR GLOW */
+.mission-fill{box-shadow:0 0 10px rgba(72,255,130,0.5);}
+
+/* TOOL CATEGORIES */
+.tool-cat{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(72,255,130,0.05);border:1px solid rgba(72,255,130,0.15);cursor:pointer;margin-bottom:2px;transition:all .2s;}
+.tool-cat:hover{background:rgba(72,255,130,0.1);border-color:rgba(72,255,130,0.35);}
+.tool-cat-lbl{font-size:9px;letter-spacing:2px;color:var(--green);font-weight:600;}
+.tool-cat-arrow{font-size:9px;color:var(--dim);transition:transform .2s;}
+.tool-cat-arrow.open{transform:rotate(90deg);color:var(--green);}
+.tool-cat-body{display:none;padding:4px 0 6px;border-left:2px solid rgba(72,255,130,0.15);margin-left:8px;padding-left:8px;margin-bottom:4px;}
+.tool-cat-body.open{display:block;}
+.tool-btn-full{width:100%;font-family:var(--mono);font-size:8px;letter-spacing:1px;padding:6px 10px;background:rgba(72,255,130,0.03);border:1px solid rgba(72,255,130,0.1);color:rgba(72,255,130,0.6);cursor:pointer;transition:all .2s;text-align:left;margin-bottom:2px;display:block;}
+.tool-btn-full:hover{background:rgba(72,255,130,0.12);color:var(--green);border-color:rgba(72,255,130,0.35);}
+
+/* MOBILE */
+@media(max-width:900px){
+  #app{grid-template-columns:1fr!important;height:auto;overflow:visible;}
+  body,html{overflow:auto;}
+  .panel{border-right:none;border-bottom:1px solid var(--border);}
+  .main-clock{font-size:36px!important;}
+  .radar-wrap{width:220px!important;height:220px!important;}
+  #bottom-bar{flex-wrap:wrap;height:auto;padding:6px;}
+  #ticker{position:relative;bottom:auto;}
+}
+
+/* AI CHAT */
+.ai-chat-overlay{position:fixed;inset:0;background:rgba(3,14,8,0.96);z-index:900;display:none;flex-direction:column;}
+.ai-chat-overlay.open{display:flex;}
+.ai-chat-header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);background:#061a10;}
+.ai-chat-title{font-family:var(--orb);font-size:14px;color:var(--green);letter-spacing:3px;}
+.ai-chat-close{background:none;border:none;color:var(--dim);cursor:pointer;font-size:18px;}
+.ai-chat-close:hover{color:var(--red);}
+.ai-chat-messages{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px;}
+.ai-chat-messages::-webkit-scrollbar{width:2px;}
+.ai-chat-messages::-webkit-scrollbar-thumb{background:var(--dim);}
+.msg{max-width:80%;padding:10px 14px;font-size:11px;line-height:1.6;letter-spacing:0.5px;}
+.msg-user{background:rgba(72,255,130,0.08);border:1px solid rgba(72,255,130,0.2);color:var(--green);align-self:flex-end;border-radius:12px 12px 0 12px;}
+.msg-ai{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.8);align-self:flex-start;border-radius:12px 12px 12px 0;}
+.msg-ai .msg-label{font-size:7px;color:var(--green);letter-spacing:2px;margin-bottom:4px;}
+.ai-typing{display:flex;gap:4px;align-items:center;padding:8px 14px;}
+.ai-typing-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:typingDot 1.2s ease-in-out infinite;}
+.ai-typing-dot:nth-child(2){animation-delay:.2s;}
+.ai-typing-dot:nth-child(3){animation-delay:.4s;}
+@keyframes typingDot{0%,100%{opacity:0.3;transform:scale(0.8);}50%{opacity:1;transform:scale(1.2);}}
+.ai-chat-input-wrap{padding:12px 20px;border-top:1px solid var(--border);background:#061a10;display:flex;gap:8px;}
+.ai-chat-input{flex:1;background:rgba(4,16,9,0.9);border:1px solid var(--border);color:var(--green);font-family:var(--mono);font-size:11px;padding:10px 14px;outline:none;border-radius:4px;}
+.ai-chat-input:focus{border-color:rgba(72,255,130,0.5);}
+.ai-chat-send{font-family:var(--mono);font-size:9px;letter-spacing:2px;padding:10px 20px;background:rgba(72,255,130,0.1);border:1px solid rgba(72,255,130,0.4);color:var(--green);cursor:pointer;transition:all .2s;}
+.ai-chat-send:hover{background:rgba(72,255,130,0.25);}
+
+/* KEYFRAMES */
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.45;}}
+@keyframes scan{0%{left:-100%;}100%{left:100%;}}
+@keyframes tickerScroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+@keyframes swAnim{0%,100%{transform:scaleY(.4);}50%{transform:scaleY(1);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:none;}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-20px);}to{opacity:1;transform:none;}}
+@keyframes slideInRight{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:none;}}
+@keyframes slideInUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+@keyframes flash{0%{color:#fff;text-shadow:0 0 24px #fff;}100%{color:var(--green);}}
+#sidebar-left{animation:slideInLeft 0.6s 0.1s both;}
+#center{animation:slideInUp 0.6s 0.2s both;}
+#sidebar-right{animation:slideInRight 0.6s 0.1s both;}
+</style>
+</head>
+<body>
+
+<!-- BOOT SCREEN -->
+<div id="boot">
+  <div class="boot-logo">T.I.N.O.</div>
+  <div class="boot-sub">TINO INTELLIGENCE & NETWORK OPERATIONS</div>
+  <div class="boot-lines" id="bootLines"></div>
+  <div class="boot-bar-wrap">
+    <div class="boot-bar-bg"><div class="boot-bar-fill" id="bootFill"></div></div>
+    <div class="boot-pct" id="bootPct">0%</div>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif"></div>
+
+<!-- AI RESPONSE -->
+<div class="ai-response" id="aiResp">
+  <div class="ai-label">T.I.N.O. RESPONSE</div>
+  <div class="ai-text" id="aiText"></div>
+  <button class="ai-close" onclick="closeAI()">✕</button>
+</div>
+
+<!-- TICKER -->
+<div id="ticker">
+  <div class="ticker-lbl">LIVE FEED</div>
+  <div class="ticker-outer">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+
+<!-- LEFT SIDEBAR -->
+<div class="panel" id="sidebar-left">
+
+  <div class="sh">SYSTEM STATUS</div>
+  <div class="vrow"><span class="vlbl">OPERATOR</span><span class="vval">AGUSTIN C.</span></div>
+  <div class="vrow"><span class="vlbl">AGENCY</span><span class="vval">TINO DIGITAL</span></div>
+  <div class="vrow"><span class="vlbl">UPTIME</span><span class="vval" id="uptime">00:00:00</span></div>
+  <div class="vrow"><span class="vlbl">MIAMI TEMP</span><span class="vval" id="weatherTemp">--°F</span></div>
+  <div class="vrow"><span class="vlbl">CONDITIONS</span><span class="vval" id="weatherDesc">LOADING</span></div>
+  <div class="vrow"><span class="vlbl">STATUS</span><span class="vval" style="color:var(--green);animation:pulse 2s infinite">ONLINE</span></div>
+
+  <div class="sh">OUTREACH TODAY</div>
+  <div class="outreach-big" id="outreachCount">0</div>
+  <div style="font-size:7px;color:var(--green2);text-align:center;letter-spacing:1px;">/ 10 GOAL</div>
+  <div class="pbar"><div class="pbar-fill" id="outreachBar" style="width:0%"></div></div>
+  <div class="btn-row">
+    <button class="g-btn accent" onclick="logOutreach()">+ LOG VISIT</button>
+    <button class="g-btn" onclick="resetOutreach()">RESET</button>
+  </div>
+
+  <div class="sh">LEAD TRACKER</div>
+  <div id="leadList"></div>
+  <button class="g-btn full" onclick="openModal('leadModal')">+ ADD LEAD</button>
+
+  <div class="sh">DAILY CHECKLIST</div>
+  <div id="checklistWrap">
+    <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span>Review outreach list</span><button class="del-check-btn" onclick="deleteCheckItem(event,this)">✕</button></div>
+    <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span>Post on Instagram</span><button class="del-check-btn" onclick="deleteCheckItem(event,this)">✕</button></div>
+    <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span>Check email</span><button class="del-check-btn" onclick="deleteCheckItem(event,this)">✕</button></div>
+    <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span>Follow up on leads</span><button class="del-check-btn" onclick="deleteCheckItem(event,this)">✕</button></div>
+    <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span>Update CRM</span><button class="del-check-btn" onclick="deleteCheckItem(event,this)">✕</button></div>
+    <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span>Log revenue</span><button class="del-check-btn" onclick="deleteCheckItem(event,this)">✕</button></div>
+    <div class="check-item" onclick="toggleCheck(this)"><input type="checkbox"><span>Make 10 calls</span><button class="del-check-btn" onclick="deleteCheckItem(event,this)">✕</button></div>
+  </div>
+  <button class="g-btn full" onclick="addCheckItem()">+ ADD TASK</button>
+
+  <div class="sh">FOLLOW-UP QUEUE</div>
+  <div id="followUpQueue" style="font-size:8px;color:var(--dim);padding:4px 0;letter-spacing:1px;">No follow-ups yet — add leads to generate queue</div>
+  <button class="g-btn full" style="margin-top:5px;" onclick="addFollowUp()">+ ADD FOLLOW-UP</button>
+
+  <div class="sh">QUICK NOTES</div>
+  <textarea id="quick-notes" placeholder="Type notes here..."></textarea>
+
+</div>
+
+<!-- CENTER -->
+<div id="center">
+
+  <!-- CLOCK -->
+  <div class="clock-wrap">
+    <div class="main-greeting" id="mainGreeting">GOOD MORNING, AGUSTIN</div>
+    <div class="main-clock" id="mainClock">00:00:00</div>
+    <div class="main-date" id="mainDate">LOADING...</div>
+    <div class="main-brand">T.I.N.O. — TINO DIGITAL SYSTEMS — MIAMI FL</div>
+    <div class="weather-inline" id="weatherInline">
+      <span class="weather-icon" id="weatherIcon">🌤</span>
+      <span id="weatherInlineTemp">--°F</span>
+      <span id="weatherInlineDesc" style="color:var(--green2);font-size:8px;">MIAMI</span>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card" onclick="openModal('revenueModal')">
+      <div class="snum" id="statRevenue">$0</div>
+      <div class="slbl">REVENUE</div>
+      <div class="schange">THIS MONTH</div>
+    </div>
+    <div class="stat-card" onclick="openModal('leadModal')">
+      <div class="snum" id="statLeads">0</div>
+      <div class="slbl">LEADS</div>
+      <div class="schange">ACTIVE PIPELINE</div>
+    </div>
+    <div class="stat-card">
+      <div class="snum" id="statClients">0</div>
+      <div class="slbl">CLIENTS</div>
+      <div class="schange">SIGNED</div>
+    </div>
+    <div class="stat-card">
+      <div class="snum" id="statClose">0%</div>
+      <div class="slbl">CLOSE RATE</div>
+      <div class="schange">ALL TIME</div>
+    </div>
+  </div>
+
+  <!-- RADAR -->
+  <div class="radar-wrap">
+    <div class="radar-pulse"></div>
+    <div class="radar-pulse"></div>
+    <div class="radar-pulse"></div>
+    <canvas class="radar-canvas" id="radarCanvas" width="280" height="280"></canvas>
+    <div class="radar-center">
+      <div class="radar-status">SCANNING</div>
+      <div class="radar-sub">MIAMI-DADE ACTIVE</div>
+    </div>
+  </div>
+
+  <!-- MISSION -->
+  <div class="mission-wrap">
+    <div class="mission-top">
+      <span class="mission-title">FIRST CLIENT MISSION</span>
+      <span class="mission-amt">$680 TARGET</span>
+    </div>
+    <div class="mission-track"><div class="mission-fill" id="missionFill"></div></div>
+    <div class="mission-note" id="missionNote">0% complete — keep pushing</div>
+  </div>
+
+  <!-- XP -->
+  <div class="xp-wrap">
+    <div class="xp-label">LEVEL 1 — RECRUIT</div>
+    <div class="xp-track"><div class="xp-fill" id="xpFill"></div></div>
+    <div class="xp-note" id="xpNote">0 / 100 XP — Close first client to rank up</div>
+  </div>
+
+  <!-- QUICK LAUNCH -->
+  <div class="ql-wrap">
+    <button class="ql-btn" onclick="window.open('https://tinodigitalsystems.com','_blank')">🌐 WEBSITE</button>
+    <button class="ql-btn" onclick="window.open('https://calendly.com/c08/free-consultation','_blank')">📅 CALENDLY</button>
+    <button class="ql-btn" onclick="window.open('https://docs.google.com/spreadsheets/d/1tBLckjgIiTev13cJ0AKWjHF-vBC6mkKDtsI2Ab7--FQ','_blank')">📊 CRM</button>
+    <button class="ql-btn" onclick="window.open('https://make.com','_blank')">⚡ MAKE</button>
+  </div>
+
+  <!-- POMODORO -->
+  <div style="width:100%;background:rgba(72,255,130,0.04);border:1px solid var(--border);padding:10px 14px;">
+    <div class="sh" style="margin-top:0;">FOCUS TIMER</div>
+    <div class="pomo-clock" id="pomoClock">25:00</div>
+    <div class="pomo-mode" id="pomoMode">WORK SESSION</div>
+    <div class="pomo-btns">
+      <button class="g-btn" onclick="pomoStart()">START</button>
+      <button class="g-btn" onclick="pomoPause()">PAUSE</button>
+      <button class="g-btn" onclick="pomoReset()">RESET</button>
+      <button class="g-btn" onclick="pomoSwitch()">BREAK MODE</button>
+    </div>
+  </div>
+
+  <!-- DIAG LOG -->
+  <div style="width:100%;">
+    <div class="sh" style="margin-top:0;">SYSTEM LOG</div>
+    <div class="diag-log" id="diagLog"></div>
+    <div style="font-size:8px;color:var(--dim);margin-top:3px;">><span class="cursor"></span></div>
+  </div>
+
+  <!-- 90-DAY PROJECTION -->
+  <div style="width:100%;background:rgba(72,255,130,0.04);border:1px solid var(--border);padding:10px 14px;">
+    <div class="sh" style="margin-top:0;">90-DAY PROJECTION</div>
+    <div class="money-row"><span class="money-lbl">Month 1 (1 client)</span><span class="money-val">$680 + $50/mo</span></div>
+    <div class="money-row"><span class="money-lbl">Month 2 (3 clients)</span><span class="money-val">$2,040 + $150/mo</span></div>
+    <div class="money-row"><span class="money-lbl">Month 3 (5 clients)</span><span class="money-val">$3,400 + $250/mo</span></div>
+    <div class="money-row"><span class="money-lbl">Recurring by Day 90</span><span class="money-val big">$450/mo</span></div>
+  </div>
+
+</div>
+
+<!-- RIGHT SIDEBAR -->
+<div class="panel" id="sidebar-right">
+
+  <div class="sh">REVENUE TRACKER</div>
+  <div class="money-row"><span class="money-lbl">TOTAL EARNED</span><span class="money-val big" id="revTotal">$0</span></div>
+  <div class="money-row"><span class="money-lbl">PAY YOURSELF (40%)</span><span class="money-val" id="rev40">$0</span></div>
+  <div class="money-row"><span class="money-lbl">TAXES (25%)</span><span class="money-val" id="rev25">$0</span></div>
+  <div class="money-row"><span class="money-lbl">REINVEST (20%)</span><span class="money-val" id="rev20">$0</span></div>
+  <div class="money-row"><span class="money-lbl">EMERGENCY (15%)</span><span class="money-val" id="rev15">$0</span></div>
+  <div class="split-note">40/25/20/15 SPLIT — FIRST CLIENT UNLOCKS LLC</div>
+  <button class="g-btn full" onclick="openModal('revenueModal')">+ LOG PAYMENT</button>
+
+  <div class="sh">PACKAGES</div>
+  <div class="ms-row"><div class="ms-hdr"><span class="ms-lbl">Starter $680+$50/mo</span><span class="ms-val">0 sold</span></div><div class="ms-bar"><div class="ms-fill" style="width:0%"></div></div></div>
+  <div class="ms-row"><div class="ms-hdr"><span class="ms-lbl">Growth $820+$75/mo</span><span class="ms-val">0 sold</span></div><div class="ms-bar"><div class="ms-fill" style="width:0%"></div></div></div>
+  <div class="ms-row"><div class="ms-hdr"><span class="ms-lbl">Premium $1500+$200/mo</span><span class="ms-val">0 sold</span></div><div class="ms-bar"><div class="ms-fill" style="width:0%"></div></div></div>
+
+  <div class="sh">TOOLS</div>
+
+  <!-- SALES -->
+  <div class="tool-cat" onclick="toggleCat('cat-sales')">
+    <span class="tool-cat-lbl">💼 SALES</span>
+    <span class="tool-cat-arrow" id="arr-sales">▶</span>
+  </div>
+  <div class="tool-cat-body" id="cat-sales">
+    <button class="tool-btn-full" onclick="openModal('invoiceModal')">Invoice Generator</button>
+    <button class="tool-btn-full" onclick="openModal('proposalModal')">Proposal Generator</button>
+    <button class="tool-btn-full" onclick="openModal('contractModal')">Contract Generator</button>
+    <button class="tool-btn-full" onclick="openModal('revcalcModal')">Revenue Calculator</button>
+    <button class="tool-btn-full" onclick="openModal('closerateModal')">Close Rate Tracker</button>
+  </div>
+
+  <!-- PITCH -->
+  <div class="tool-cat" onclick="toggleCat('cat-pitch')">
+    <span class="tool-cat-lbl">🎯 PITCH</span>
+    <span class="tool-cat-arrow" id="arr-pitch">▶</span>
+  </div>
+  <div class="tool-cat-body" id="cat-pitch">
+    <button class="tool-btn-full" onclick="openModal('pitchModal')">Pitch Scripts EN/ES</button>
+    <button class="tool-btn-full" onclick="openModal('objModal')">Objection Handler</button>
+    <button class="tool-btn-full" onclick="openModal('dmModal')">DM Scripts</button>
+    <button class="tool-btn-full" onclick="openModal('auditModal')">Site Audit Tool</button>
+  </div>
+
+  <!-- CLIENT -->
+  <div class="tool-cat" onclick="toggleCat('cat-client')">
+    <span class="tool-cat-lbl">👤 CLIENTS</span>
+    <span class="tool-cat-arrow" id="arr-client">▶</span>
+  </div>
+  <div class="tool-cat-body" id="cat-client">
+    <button class="tool-btn-full" onclick="openModal('onboardModal')">Client Onboarding</button>
+    <button class="tool-btn-full" onclick="openModal('upsellModal')">Upsell Alerts</button>
+    <button class="tool-btn-full" onclick="openModal('retentionModal')">Retention Alerts</button>
+    <button class="tool-btn-full" onclick="openModal('prospectModal')">Prospect Tracker</button>
+  </div>
+
+  <!-- FINANCE -->
+  <div class="tool-cat" onclick="toggleCat('cat-finance')">
+    <span class="tool-cat-lbl">💰 FINANCE</span>
+    <span class="tool-cat-arrow" id="arr-finance">▶</span>
+  </div>
+  <div class="tool-cat-body" id="cat-finance">
+    <button class="tool-btn-full" onclick="openModal('cashflowModal')">Cash Flow Tracker</button>
+    <button class="tool-btn-full" onclick="openModal('vendorModal')">Expense Tracker</button>
+    <button class="tool-btn-full" onclick="openModal('payModal')">Payment Methods</button>
+    <button class="tool-btn-full" onclick="openModal('winModal')">Win Log</button>
+  </div>
+
+  <!-- INTEL -->
+  <div class="tool-cat" onclick="toggleCat('cat-intel')">
+    <span class="tool-cat-lbl">📡 INTEL</span>
+    <span class="tool-cat-arrow" id="arr-intel">▶</span>
+  </div>
+  <div class="tool-cat-body" id="cat-intel">
+    <button class="tool-btn-full" onclick="openModal('areaModal')">Miami Area Intel</button>
+    <button class="tool-btn-full" onclick="openModal('newsModal')">Business News</button>
+    <button class="tool-btn-full" onclick="openModal('networkModal')">Network & Contacts</button>
+    <button class="tool-btn-full" onclick="openModal('healthModal')">Business Health Score</button>
+    <button class="tool-btn-full" onclick="openModal('socialcalModal')">Social Media Calendar</button>
+    <button class="tool-btn-full" onclick="openModal('certModal')">Certifications</button>
+  </div>
+
+  <div class="sh">OUTREACH STREAK</div>
+  <div class="streak-num" id="streakNum">0</div><span class="streak-fire" id="streakFire" style="display:none;">🔥</span>
+  <div class="streak-lbl">DAY STREAK</div>
+  <div class="btn-row" style="margin-top:6px;">
+    <button class="g-btn accent" onclick="addStreak()">+ DAY</button>
+    <button class="g-btn" onclick="resetStreak()">RESET</button>
+  </div>
+
+  <div class="sh">GOAL COUNTDOWN</div>
+  <div class="cd-time" id="goalCd">--d --h --m</div>
+  <div class="cd-lbl">UNTIL FIRST CLIENT GOAL</div>
+  <div style="font-size:7px;color:var(--green2);text-align:center;margin-top:4px;letter-spacing:1px;">TARGET: JUN 30 2026</div>
+
+  <div class="sh">NEXT ACTIONS</div>
+  <div style="font-size:8px;color:var(--green);line-height:1.8;letter-spacing:1px;">
+    → Walk-in outreach today<br>
+    → Follow up on hot leads<br>
+    → Post on Instagram<br>
+    → Renew Namecheap email (Jul 2)<br>
+    → Get $5 Anthropic API credits<br>
+    → Take real photo for About page
+  </div>
+
+</div>
+</div>
+
+<!-- AI CHAT OVERLAY -->
+<div class="ai-chat-overlay" id="aiChatOverlay">
+  <div class="ai-chat-header">
+    <div class="ai-chat-title">T.I.N.O. AI</div>
+    <button class="ai-chat-close" onclick="closeAIChat()">✕</button>
+  </div>
+  <div class="ai-chat-messages" id="aiChatMessages">
+    <div class="msg msg-ai">
+      <div class="msg-label">T.I.N.O.</div>
+      T.I.N.O. online. I'm your business AI — ask me anything about sales, clients, pricing, or strategy. What do you need?
+    </div>
+  </div>
+  <div class="ai-chat-input-wrap">
+    <input class="ai-chat-input" id="aiChatInput" placeholder="Ask T.I.N.O. anything..." onkeydown="if(event.key==='Enter') sendAIMessage()">
+    <button class="ai-chat-send" onclick="sendAIMessage()">SEND →</button>
+  </div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div id="bottom-bar">
+  <button class="bb-btn accent" style="background:rgba(72,255,130,0.15);border-color:var(--green);" onclick="openAIChat()">🤖 ASK T.I.N.O.</button>
+  <div class="bb-sep"></div>
+  <button class="voice-btn" id="voiceBtn" onclick="toggleVoice()">🎙 VOICE</button>
+  <button class="bb-btn" id="wakeBtn" onclick="toggleWakeWord()" title="Say 'Hey TINO' to activate">👂 WAKE</button>
+  <button class="bb-btn accent" onclick="openModal('aiChatModal')">🤖 ASK T.I.N.O.</button>
+  <div class="soundwave" id="soundwave">
+    <div class="sw-bar" style="height:3px"></div>
+    <div class="sw-bar" style="height:9px"></div>
+    <div class="sw-bar" style="height:13px"></div>
+    <div class="sw-bar" style="height:7px"></div>
+    <div class="sw-bar" style="height:11px"></div>
+  </div>
+  <div class="bb-sep"></div>
+  <button class="bb-btn accent" onclick="openModal('invoiceModal')">INVOICE</button>
+  <button class="bb-btn" onclick="openModal('proposalModal')">PROPOSAL</button>
+  <button class="bb-btn" onclick="openModal('pitchModal')">PITCH</button>
+  <button class="bb-btn" onclick="openModal('objModal')">OBJECTIONS</button>
+  <button class="bb-btn" onclick="openModal('dmModal')">DM SCRIPTS</button>
+  <div class="bb-sep"></div>
+  <button class="bb-btn" onclick="window.open('https://tinodigitalsystems.com','_blank')">🌐 SITE</button>
+  <button class="bb-btn" onclick="window.open('https://calendly.com/c08/free-consultation','_blank')">📅 BOOK</button>
+  <button class="bb-btn" onclick="window.open('https://docs.google.com/spreadsheets/d/1tBLckjgIiTev13cJ0AKWjHF-vBC6mkKDtsI2Ab7--FQ','_blank')">📊 CRM</button>
+  <div class="bb-sep"></div>
+  <span style="font-size:8px;color:var(--dim);letter-spacing:1px;margin-left:auto;" id="bbTime">--:--</span>
+</div>
+
+<!-- OVERLAYS -->
+
+<!-- INVOICE -->
+<div class="tino-overlay" id="invoiceModal">
+<div class="tino-modal">
+  <div class="modal-hdr">INVOICE GENERATOR<button onclick="closeModal('invoiceModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="f-row"><label>Client Name</label><input class="f-inp" id="inv-client" placeholder="Business Name"></div>
+    <div class="f-row"><label>Client Email</label><input class="f-inp" id="inv-email" placeholder="email@business.com"></div>
+    <div class="f-row"><label>Service</label>
+      <select class="f-sel" id="inv-service">
+        <option>Starter Website — $680</option>
+        <option>Growth Website — $820</option>
+        <option>Premium Website — $1,500</option>
+        <option>SEO Setup — $200</option>
+        <option>Booking System — $100</option>
+        <option>Bilingual Add-On — $200</option>
+        <option>Social Media — $300/mo</option>
+        <option>Custom Package</option>
+      </select>
+    </div>
+    <div class="f-row"><label>Amount ($)</label><input class="f-inp" id="inv-amount" type="number" placeholder="680"></div>
+    <div class="f-row"><label>Monthly Retainer</label><input class="f-inp" id="inv-retainer" type="number" placeholder="50"></div>
+    <div class="f-row"><label>Due Date</label><input class="f-inp" id="inv-due" type="date"></div>
+    <div class="f-row"><label>Notes</label><input class="f-inp" id="inv-notes" placeholder="Optional notes"></div>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button class="modal-btn" onclick="generateInvoice()">GENERATE & PRINT</button>
+      <button class="modal-btn" onclick="closeModal('invoiceModal')">CANCEL</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- PROPOSAL -->
+<div class="tino-overlay" id="proposalModal">
+<div class="tino-modal">
+  <div class="modal-hdr">PROPOSAL GENERATOR<button onclick="closeModal('proposalModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="f-row"><label>Business Name</label><input class="f-inp" id="prop-biz" placeholder="e.g. Panda Barbershop"></div>
+    <div class="f-row"><label>Owner Name</label><input class="f-inp" id="prop-owner" placeholder="e.g. Carlos"></div>
+    <div class="f-row"><label>Package</label>
+      <select class="f-sel" id="prop-pkg">
+        <option>Starter — $680 + $50/mo</option>
+        <option>Growth — $820 + $75/mo</option>
+        <option>Premium — $1,500 + $200/mo</option>
+      </select>
+    </div>
+    <div class="f-row"><label>Add-Ons</label><input class="f-inp" id="prop-addons" placeholder="e.g. Bilingual +$200, SEO +$200"></div>
+    <div class="f-row"><label>Industry</label><input class="f-inp" id="prop-industry" placeholder="e.g. Barbershop"></div>
+    <button class="modal-btn" style="margin-top:10px;" onclick="generateProposal()">GENERATE PROPOSAL</button>
+    <div id="proposalOutput" style="margin-top:14px;font-size:9px;color:var(--green2);line-height:1.8;display:none;border-top:1px solid var(--border);padding-top:12px;"></div>
+  </div>
+</div>
+</div>
+
+<!-- PITCH SCRIPTS -->
+<div class="tino-overlay" id="pitchModal">
+<div class="tino-modal">
+  <div class="modal-hdr">PITCH SCRIPTS — EN/ES<button onclick="closeModal('pitchModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="pitch-block">
+      <div class="pitch-lbl">WALK-IN OPENER (ENGLISH)</div>
+      <div class="pitch-text">"Hi, I'm Agustin with Tino Digital Systems — I build websites for local Miami businesses. I noticed you don't have a website yet. I build professional sites starting at $680 — that's a one-time fee, no monthly bloat. Takes 1-2 weeks. Mind if I show you what I built for a local contractor?"</div>
+      <button class="copy-btn" onclick="copyText(this, 'Hi, I\'m Agustin with Tino Digital Systems — I build websites for local Miami businesses. I noticed you don\'t have a website yet. I build professional sites starting at $680 — that\'s a one-time fee, no monthly bloat. Takes 1-2 weeks. Mind if I show you what I built for a local contractor?')">COPY</button>
+    </div>
+    <div class="pitch-block">
+      <div class="pitch-lbl">WALK-IN OPENER (ESPAÑOL)</div>
+      <div class="pitch-text">"Hola, soy Agustín de Tino Digital Systems — construyo páginas web para negocios locales en Miami. Vi que todavía no tienen página web. Hago sitios profesionales desde $680 — pago único, sin mensualidades grandes. Listo en 1-2 semanas. ¿Puedo mostrarle lo que hice para un contratista local?"</div>
+      <button class="copy-btn" onclick="copyText(this, 'Hola, soy Agustín de Tino Digital Systems — construyo páginas web para negocios locales en Miami. Vi que todavía no tienen página web. Hago sitios profesionales desde $680 — pago único, sin mensualidades grandes. Listo en 1-2 semanas. ¿Puedo mostrarle lo que hice para un contratista local?')">COPY</button>
+    </div>
+    <div class="pitch-block">
+      <div class="pitch-lbl">CLOSING LINE</div>
+      <div class="pitch-text">"All I need is 20 minutes and your business info. You'll have a live website in under 2 weeks. Most of my clients get their first new customer from the site within the first month. Want to book a free call this week?"</div>
+      <button class="copy-btn" onclick="copyText(this, 'All I need is 20 minutes and your business info. You\'ll have a live website in under 2 weeks. Most of my clients get their first new customer from the site within the first month. Want to book a free call this week?')">COPY</button>
+    </div>
+    <div class="pitch-block">
+      <div class="pitch-lbl">AGE OBJECTION RESPONSE</div>
+      <div class="pitch-text">"I'm 16 and I built a live website, an AI operating system, and I'm certified in SEO and digital marketing. Most agencies charge 3x what I charge and take 3x longer. The work speaks for itself — want to see it?"</div>
+      <button class="copy-btn" onclick="copyText(this, 'I\'m 16 and I built a live website, an AI operating system, and I\'m certified in SEO and digital marketing. Most agencies charge 3x what I charge and take 3x longer. The work speaks for itself — want to see it?')">COPY</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- OBJECTIONS -->
+<div class="tino-overlay" id="objModal">
+<div class="tino-modal">
+  <div class="modal-hdr">OBJECTION HANDLER<button onclick="closeModal('objModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="obj-card">
+      <div class="obj-q">// "I already have a Facebook page"</div>
+      <div class="obj-a">"Facebook is rented land — they control your reach and can shut you down anytime. A website is yours forever. Also, 81% of customers search Google before buying, not Facebook. I can have you on Google Maps and ranking locally within weeks."</div>
+    </div>
+    <div class="obj-card">
+      <div class="obj-q">// "It's too expensive"</div>
+      <div class="obj-a">"$680 is a one-time investment. One new customer from your website covers the cost. After that, every customer is pure profit. Most big agencies charge $3,000-5,000 for the same thing and take months. I deliver in 2 weeks."</div>
+    </div>
+    <div class="obj-card">
+      <div class="obj-q">// "I need to think about it"</div>
+      <div class="obj-a">"Totally understand. Here's my card — I'll follow up in 3 days. While you think, your competitors are getting found online and you're not. Even a quick free consultation costs nothing. Can I book 15 minutes with you this week?"</div>
+    </div>
+    <div class="obj-card">
+      <div class="obj-q">// "You're too young"</div>
+      <div class="obj-a">"I'm certified in SEO and digital marketing, I've built live websites for real businesses, and I charge half what agencies charge. Age doesn't build websites — skill does. Here's what I built last month."</div>
+    </div>
+    <div class="obj-card">
+      <div class="obj-q">// "I don't need a website right now"</div>
+      <div class="obj-a">"Every month without a website is customers choosing your competitor on Google instead of you. My clients start seeing results in 30-60 days. The sooner we start, the sooner you see ROI."</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- DM SCRIPTS -->
+<div class="tino-overlay" id="dmModal">
+<div class="tino-modal">
+  <div class="modal-hdr">DM / MESSAGE SCRIPTS<button onclick="closeModal('dmModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="dm-block">
+      <div class="dm-lbl">INSTAGRAM DM — COLD OUTREACH</div>
+      <div class="dm-text" id="dm1">Hey [Name]! I came across [Business] and love what you're doing. I noticed you might not have a full website yet — I build custom sites for Miami businesses starting at $680. Mind if I send over a quick example? No pressure at all.</div>
+      <button class="copy-btn" onclick="copyText(this, document.getElementById('dm1').textContent)">COPY</button>
+    </div>
+    <div class="dm-block">
+      <div class="dm-lbl">FOLLOW-UP (3 DAYS LATER)</div>
+      <div class="dm-text" id="dm2">Hey [Name], just following up from my last message! I know you're busy running [Business]. I'd love to show you a quick demo — takes only 5 minutes. A website could bring you new customers every week without any extra work on your end. Want to hop on a free call?</div>
+      <button class="copy-btn" onclick="copyText(this, document.getElementById('dm2').textContent)">COPY</button>
+    </div>
+    <div class="dm-block">
+      <div class="dm-lbl">REFERRAL REQUEST</div>
+      <div class="dm-text" id="dm3">Hey [Name], hope everything's going well! Quick question — do you know any other business owners in Miami who might need a website? I offer a $100 cash referral for anyone you send my way that signs up. No pressure, just thought I'd ask!</div>
+      <button class="copy-btn" onclick="copyText(this, document.getElementById('dm3').textContent)">COPY</button>
+    </div>
+    <div class="dm-block">
+      <div class="dm-lbl">SPANISH DM</div>
+      <div class="dm-text" id="dm4">Hola [Nombre]! Vi tu negocio [Negocio] y me parece excelente. Noté que quizás no tienen página web todavía — hago sitios profesionales para negocios en Miami desde $680. ¿Le puedo mostrar un ejemplo rápido? Sin compromiso.</div>
+      <button class="copy-btn" onclick="copyText(this, document.getElementById('dm4').textContent)">COPY</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SITE AUDIT -->
+<div class="tino-overlay" id="auditModal">
+<div class="tino-modal">
+  <div class="modal-hdr">WEBSITE AUDIT TOOL<button onclick="closeModal('auditModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="f-row"><label>Business URL</label><input class="f-inp" id="audit-url" placeholder="https://businessname.com"></div>
+    <div class="f-row"><label>Business Name</label><input class="f-inp" id="audit-biz" placeholder="Business Name"></div>
+    <button class="modal-btn" onclick="runAudit()" style="margin-top:8px;">RUN AUDIT</button>
+    <div id="auditResult" style="margin-top:14px;display:none;border-top:1px solid var(--border);padding-top:12px;"></div>
+  </div>
+</div>
+</div>
+
+<!-- LEAD MODAL -->
+<div class="tino-overlay" id="leadModal">
+<div class="tino-modal">
+  <div class="modal-hdr">ADD LEAD<button onclick="closeModal('leadModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="f-row"><label>Business Name</label><input class="f-inp" id="lead-biz" placeholder="Business name"></div>
+    <div class="f-row"><label>Type</label><input class="f-inp" id="lead-type" placeholder="Barbershop, Salon, etc."></div>
+    <div class="f-row"><label>Phone</label><input class="f-inp" id="lead-phone" placeholder="(305) 000-0000"></div>
+    <div class="f-row"><label>Status</label>
+      <select class="f-sel" id="lead-status">
+        <option>HOT</option>
+        <option>INTERESTED</option>
+        <option>FOLLOW UP</option>
+        <option>CONTACTED</option>
+        <option>NOT INTERESTED</option>
+      </select>
+    </div>
+    <div class="f-row"><label>Notes</label><input class="f-inp" id="lead-notes" placeholder="Any notes..."></div>
+    <button class="modal-btn" onclick="addLead()" style="margin-top:8px;">ADD TO PIPELINE</button>
+  </div>
+</div>
+</div>
+
+<!-- REVENUE MODAL -->
+<div class="tino-overlay" id="revenueModal">
+<div class="tino-modal">
+  <div class="modal-hdr">LOG PAYMENT<button onclick="closeModal('revenueModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="f-row"><label>Client</label><input class="f-inp" id="rev-client" placeholder="Client name"></div>
+    <div class="f-row"><label>Amount ($)</label><input class="f-inp" id="rev-amount" type="number" placeholder="680"></div>
+    <div class="f-row"><label>Type</label>
+      <select class="f-sel" id="rev-type">
+        <option>One-Time Setup</option>
+        <option>Monthly Retainer</option>
+        <option>Add-On</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <button class="modal-btn" onclick="logRevenue()" style="margin-top:8px;">LOG PAYMENT 💰</button>
+  </div>
+</div>
+</div>
+
+<!-- UPSELL ALERTS -->
+<div class="tino-overlay" id="upsellModal">
+<div class="tino-modal">
+  <div class="modal-hdr">UPSELL OPPORTUNITIES<button onclick="closeModal('upsellModal')">✕</button></div>
+  <div class="modal-body">
+    <div style="font-size:8px;color:var(--green2);margin-bottom:10px;letter-spacing:1px;">Once you have clients, track upsell opportunities here. Every Starter client is a Growth upsell waiting to happen.</div>
+    <div class="upsell-row"><div class="upsell-name">Carolini Constructions</div><div class="upsell-tags"><span class="upsell-tag ut-soon">SEO SETUP $200</span><span class="upsell-tag ut-ok">SOCIAL $300/mo</span></div></div>
+    <div class="upsell-row"><div class="upsell-name">Template Slot 2</div><div class="upsell-tags"><span class="upsell-tag ut-ok">BILINGUAL +$200</span></div></div>
+    <div style="margin-top:10px;font-size:8px;color:var(--dim);letter-spacing:1px;">Add clients after signing to track their renewal dates and upsell windows.</div>
+  </div>
+</div>
+</div>
+
+<!-- WIN LOG -->
+<div class="tino-overlay" id="winModal">
+<div class="tino-modal">
+  <div class="modal-hdr">WIN LOG<button onclick="closeModal('winModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="f-row"><label>Win Description</label><input class="f-inp" id="win-text" placeholder="e.g. Sent first proposal to barbershop"></div>
+    <button class="modal-btn" onclick="addWin()" style="margin-top:8px;">LOG WIN 🏆</button>
+    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px;" id="winList">
+      <div class="win-row"><span class="win-text">Built caroliniconstructions.com</span><span class="win-date">Jun 2026</span></div>
+      <div class="win-row"><span class="win-text">Set up Carolini Design booking system</span><span class="win-date">Jun 2026</span></div>
+      <div class="win-row"><span class="win-text">Launched tinodigitalsystems.com</span><span class="win-date">Jun 2026</span></div>
+      <div class="win-row"><span class="win-text">Got 3 digital marketing certifications</span><span class="win-date">Jun 2026</span></div>
+      <div class="win-row"><span class="win-text">Created Google Business Profile</span><span class="win-date">Jun 2026</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- AREA INTEL -->
+<div class="tino-overlay" id="areaModal">
+<div class="tino-modal">
+  <div class="modal-hdr">MIAMI AREA INTELLIGENCE<button onclick="closeModal('areaModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="area-row"><div class="area-name">HIALEAH</div><div class="area-meta">Highest density of small businesses. Spanish dominant. Barbershops, salons, auto shops. Walk-in friendly culture.</div><div class="area-score as-hot">HOT ZONE</div></div>
+    <div class="area-row"><div class="area-name">LITTLE HAVANA</div><div class="area-meta">Restaurants, bodegas, cigar shops. Spanish only. Tight community — one yes leads to referrals.</div><div class="area-score as-hot">HOT ZONE</div></div>
+    <div class="area-row"><div class="area-name">DORAL</div><div class="area-meta">Corporate businesses, higher budgets. More formal approach needed. Growth and Premium packages fit here.</div><div class="area-score as-premium">PREMIUM</div></div>
+    <div class="area-row"><div class="area-name">KENDALL</div><div class="area-meta">Suburban residential businesses. Clinics, salons, service shops. Budget conscious but high volume.</div><div class="area-score as-good">GOOD</div></div>
+    <div class="area-row"><div class="area-name">HOMESTEAD</div><div class="area-meta">Underserved market. Very few businesses have websites. Less competition, easier closes.</div><div class="area-score as-untapped">UNTAPPED</div></div>
+    <div class="area-row"><div class="area-name">WESTCHESTER</div><div class="area-meta">Dense residential with local services. Middle-class Cuban community. Good Starter package territory.</div><div class="area-score as-good">GOOD</div></div>
+  </div>
+</div>
+</div>
+
+<!-- CERTS MODAL -->
+<div class="tino-overlay" id="certModal">
+<div class="tino-modal">
+  <div class="modal-hdr">CERTIFICATIONS<button onclick="closeModal('certModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="cert-row"><span class="cert-name">HubSpot SEO Certification</span><span class="cert-badge done">✓ EARNED</span></div>
+    <div class="cert-row"><span class="cert-name">HubSpot Digital Marketing</span><span class="cert-badge done">✓ EARNED</span></div>
+    <div class="cert-row"><span class="cert-name">Semrush SEO Toolkit</span><span class="cert-badge done">✓ EARNED</span></div>
+    <div class="cert-row"><span class="cert-name">Google Analytics — skillshop.withgoogle.com</span><span class="cert-badge">IN PROGRESS</span></div>
+    <div class="cert-row"><span class="cert-name">Meta Blueprint — academy.facebook.com</span><span class="cert-badge">IN PROGRESS</span></div>
+    <div class="cert-row"><span class="cert-name">Google Digital Garage</span><span class="cert-badge">PENDING</span></div>
+    <div class="cert-row"><span class="cert-name">IBM AI Fundamentals — skillsbuild.org</span><span class="cert-badge">PENDING</span></div>
+    <div style="margin-top:12px;font-size:8px;color:var(--green2);letter-spacing:1px;line-height:1.8;">3 earned / 4 remaining<br>Each cert adds credibility during walk-in pitches.</div>
+  </div>
+</div>
+</div>
+
+<!-- PROSPECTS MODAL -->
+<div class="tino-overlay" id="prospectModal">
+<div class="tino-modal">
+  <div class="modal-hdr">PROSPECT TRACKER<button onclick="closeModal('prospectModal')">✕</button></div>
+  <div class="modal-body">
+    <div style="font-size:8px;color:var(--green2);margin-bottom:10px;letter-spacing:1px;">48 targets identified for June 6 outreach</div>
+    <div class="prospect-row"><span class="p-biz">2 Thumbs Up Barber</span><span class="p-status ps-interested">INTERESTED</span></div>
+    <div class="prospect-row"><span class="p-biz">Fellas Barber Studio</span><span class="p-status ps-contacted">CONTACTED</span></div>
+    <div class="prospect-row"><span class="p-biz">Panda Barbershop</span><span class="p-status ps-followup">FOLLOW UP</span></div>
+    <div class="prospect-row"><span class="p-biz">La Bonita Hair Salon</span><span class="p-status ps-interested">INTERESTED</span></div>
+    <div class="prospect-row"><span class="p-biz">Estilo Beauty Salon</span><span class="p-status ps-contacted">CONTACTED</span></div>
+    <div class="prospect-row"><span class="p-biz">GM Auto Tech</span><span class="p-status ps-no">NO ANSWER</span></div>
+    <div class="prospect-row"><span class="p-biz">American Health Centers</span><span class="p-status ps-contacted">CONTACTED</span></div>
+    <div style="margin-top:8px;font-size:7px;color:var(--dim);letter-spacing:1px;">+ 41 more targets — open outreach tracker for full list</div>
+    <button class="modal-btn" onclick="window.open('https://docs.google.com/spreadsheets/d/1tBLckjgIiTev13cJ0AKWjHF-vBC6mkKDtsI2Ab7--FQ','_blank')" style="margin-top:10px;">OPEN FULL CRM</button>
+  </div>
+</div>
+</div>
+
+<!-- PAYMENT METHODS -->
+<div class="tino-overlay" id="payModal">
+<div class="tino-modal">
+  <div class="modal-hdr">PAYMENT METHODS<button onclick="closeModal('payModal')">✕</button></div>
+  <div class="modal-body">
+    <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(72,255,130,0.07);font-size:8px;"><span style="color:var(--green);">Zelle</span><span style="color:var(--green2);">0% fee</span><span style="color:var(--green);font-size:7px;padding:1px 5px;border:1px solid rgba(72,255,130,0.4);">BEST</span></div>
+    <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(72,255,130,0.07);font-size:8px;"><span style="color:var(--green);">Stripe</span><span style="color:var(--green2);">2.9% + 30¢</span><span style="color:var(--blue);font-size:7px;padding:1px 5px;border:1px solid rgba(0,229,255,0.4);">ONLINE</span></div>
+    <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(72,255,130,0.07);font-size:8px;"><span style="color:var(--green);">Cash</span><span style="color:var(--green2);">0% fee</span><span style="color:var(--gold);font-size:7px;padding:1px 5px;border:1px solid rgba(255,215,0,0.4);">IN PERSON</span></div>
+    <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:8px;"><span style="color:var(--green);">Square</span><span style="color:var(--green2);">2.6% + 10¢</span><span style="color:var(--red);font-size:7px;padding:1px 5px;border:1px solid rgba(255,68,85,0.4);">AFTER LLC</span></div>
+    <div style="margin-top:10px;font-size:8px;color:var(--green2);letter-spacing:1px;">BofA SafeBalance: Checking + Savings (tax fund)<br>Split: 40% pay / 25% taxes / 20% reinvest / 15% emergency</div>
+  </div>
+</div>
+</div>
+
+<!-- CONTRACT -->
+<div class="tino-overlay" id="contractModal">
+<div class="tino-modal">
+  <div class="modal-hdr">CONTRACT GENERATOR<button onclick="closeModal('contractModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="f-row"><label>Client Name</label><input class="f-inp" id="con-client" placeholder="Full name"></div>
+    <div class="f-row"><label>Business Name</label><input class="f-inp" id="con-biz" placeholder="Business name"></div>
+    <div class="f-row"><label>Package</label><select class="f-sel" id="con-pkg"><option>Starter — $680 + $50/mo</option><option>Growth — $820 + $75/mo</option><option>Premium — $1,500 + $200/mo</option></select></div>
+    <div class="f-row"><label>Start Date</label><input class="f-inp" id="con-start" type="date"></div>
+    <div class="f-row"><label>Delivery (days)</label><input class="f-inp" id="con-delivery" placeholder="14" type="number"></div>
+    <button class="modal-btn" onclick="generateContract()" style="margin-top:8px;">GENERATE & PRINT</button>
+  </div>
+</div>
+</div>
+
+<!-- CASH FLOW -->
+<div class="tino-overlay" id="cashflowModal">
+<div class="tino-modal">
+  <div class="modal-hdr">CASH FLOW TRACKER<button onclick="closeModal('cashflowModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="money-row"><span class="money-lbl">Total Revenue</span><span class="money-val big" id="cf-revenue">$0</span></div>
+    <div class="money-row"><span class="money-lbl">Monthly Retainers</span><span class="money-val">$0/mo</span></div>
+    <div class="sh">FIXED EXPENSES</div>
+    <div id="cf-expense-list">
+      <div class="money-row"><span class="money-lbl">Namecheap Email</span><span class="money-val neg">-$15/yr</span></div>
+      <div class="money-row"><span class="money-lbl">Lovable Pro</span><span class="money-val neg">-$25/mo</span></div>
+    </div>
+    <div class="f-row" style="margin-top:8px;"><label>Add Expense</label><input class="f-inp" id="cf-exp-name" placeholder="Name"></div>
+    <div class="f-row"><label>Amount</label><input class="f-inp" id="cf-exp-amt" type="number" placeholder="0"></div>
+    <button class="modal-btn" onclick="addExpense()">ADD EXPENSE</button>
+    <div class="money-row" style="margin-top:10px;"><span class="money-lbl">Net Position</span><span class="money-val big" id="cf-net">$0</span></div>
+  </div>
+</div>
+</div>
+
+<!-- REV CALC -->
+<div class="tino-overlay" id="revcalcModal">
+<div class="tino-modal">
+  <div class="modal-hdr">REVENUE CALCULATOR<button onclick="closeModal('revcalcModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="f-row"><label>Starter Clients</label><input class="f-inp" id="rc-starter" type="number" placeholder="0" oninput="calcRevenue()"></div>
+    <div class="f-row"><label>Growth Clients</label><input class="f-inp" id="rc-growth" type="number" placeholder="0" oninput="calcRevenue()"></div>
+    <div class="f-row"><label>Premium Clients</label><input class="f-inp" id="rc-premium" type="number" placeholder="0" oninput="calcRevenue()"></div>
+    <div class="f-row"><label>SEO Add-On Clients</label><input class="f-inp" id="rc-seo" type="number" placeholder="0" oninput="calcRevenue()"></div>
+    <div class="f-row"><label>Social Media Clients</label><input class="f-inp" id="rc-social" type="number" placeholder="0" oninput="calcRevenue()"></div>
+    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
+      <div class="money-row"><span class="money-lbl">One-Time Revenue</span><span class="money-val" id="rc-onetime">$0</span></div>
+      <div class="money-row"><span class="money-lbl">Monthly Recurring</span><span class="money-val" id="rc-monthly">$0/mo</span></div>
+      <div class="money-row"><span class="money-lbl">Annual Projection</span><span class="money-val big" id="rc-annual">$0</span></div>
+      <div class="money-row"><span class="money-lbl">Your Cut (40%)</span><span class="money-val" id="rc-yourcut">$0</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- CLOSE RATE -->
+<div class="tino-overlay" id="closerateModal">
+<div class="tino-modal">
+  <div class="modal-hdr">CLOSE RATE TRACKER<button onclick="closeModal('closerateModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="f-row"><label>Pitches Made</label><input class="f-inp" id="cr-pitches" type="number" placeholder="0" oninput="calcCloseRate()"></div>
+    <div class="f-row"><label>Clients Closed</label><input class="f-inp" id="cr-closed" type="number" placeholder="0" oninput="calcCloseRate()"></div>
+    <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px;">
+      <div class="money-row"><span class="money-lbl">Close Rate</span><span class="money-val big" id="cr-rate">0%</span></div>
+      <div class="money-row"><span class="money-lbl">Industry Average</span><span class="money-val">20-30%</span></div>
+      <div style="margin-top:8px;font-size:8px;color:var(--green2);" id="cr-advice">Log your pitches and closes to track performance.</div>
+    </div>
+    <button class="modal-btn" onclick="logCloseSession()" style="margin-top:8px;">LOG SESSION</button>
+    <div id="cr-log" style="margin-top:8px;font-size:8px;color:var(--green2);line-height:2;border-top:1px solid var(--border);padding-top:8px;">No sessions yet.</div>
+  </div>
+</div>
+</div>
+
+<!-- BIZ HEALTH -->
+<div class="tino-overlay" id="healthModal">
+<div class="tino-modal">
+  <div class="modal-hdr">BUSINESS HEALTH SCORE<button onclick="closeModal('healthModal')">✕</button></div>
+  <div class="modal-body">
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="font-size:52px;color:var(--green);font-family:var(--orb);" id="healthScore">--</div>
+      <div style="font-size:8px;color:var(--green2);letter-spacing:2px;">/ 100 HEALTH SCORE</div>
+      <div style="font-size:9px;color:var(--gold);margin-top:4px;" id="healthGrade">CHECK ALL THAT APPLY</div>
+    </div>
+    <div class="check-item"><input type="checkbox" onchange="calcHealth()"><span>Website live (tinodigitalsystems.com)</span></div>
+    <div class="check-item"><input type="checkbox" onchange="calcHealth()"><span>Google Business Profile active</span></div>
+    <div class="check-item"><input type="checkbox" onchange="calcHealth()"><span>Instagram active (7+ posts)</span></div>
+    <div class="check-item"><input type="checkbox" onchange="calcHealth()"><span>Calendly booking set up</span></div>
+    <div class="check-item"><input type="checkbox" onchange="calcHealth()"><span>CRM being used</span></div>
+    <div class="check-item"><input type="checkbox" onchange="calcHealth()"><span>3+ certifications earned</span></div>
+    <div class="check-item"><input type="checkbox" onchange="calcHealth()"><span>Outreach happening daily</span></div>
+    <div class="check-item"><input type="checkbox" onchange="calcHealth()"><span>First client signed</span></div>
+    <div class="check-item"><input type="checkbox" onchange="calcHealth()"><span>LLC registered</span></div>
+    <div class="check-item"><input type="checkbox" onchange="calcHealth()"><span>Revenue being tracked</span></div>
+  </div>
+</div>
+</div>
+
+<!-- MIAMI NEWS -->
+<div class="tino-overlay" id="newsModal">
+<div class="tino-modal">
+  <div class="modal-hdr">MIAMI BUSINESS INTEL<button onclick="closeModal('newsModal')">✕</button></div>
+  <div class="modal-body">
+    <div style="padding:8px 0;border-bottom:1px solid rgba(72,255,130,0.07);"><div style="font-size:7px;color:var(--green);letter-spacing:2px;margin-bottom:3px;">LOCAL STAT</div><div style="font-size:9px;color:rgba(72,255,130,0.75);line-height:1.5;">Only 32% of Hialeah small businesses have a functional website. 68% of the market is wide open.</div></div>
+    <div style="padding:8px 0;border-bottom:1px solid rgba(72,255,130,0.07);"><div style="font-size:7px;color:var(--green);letter-spacing:2px;margin-bottom:3px;">DIGITAL TRENDS</div><div style="font-size:9px;color:rgba(72,255,130,0.75);line-height:1.5;">97% of consumers research online before visiting. 78% judge credibility by website quality.</div></div>
+    <div style="padding:8px 0;border-bottom:1px solid rgba(72,255,130,0.07);"><div style="font-size:7px;color:var(--green);letter-spacing:2px;margin-bottom:3px;">PITCH INTEL</div><div style="font-size:9px;color:rgba(72,255,130,0.75);line-height:1.5;">Best walk-in days: Tue/Wed/Thu 10am-2pm. Avoid Monday mornings and Friday afternoons.</div></div>
+    <div style="padding:8px 0;"><div style="font-size:7px;color:var(--green);letter-spacing:2px;margin-bottom:3px;">OPPORTUNITY</div><div style="font-size:9px;color:rgba(72,255,130,0.75);line-height:1.5;">Miami small business growth up 12% in 2026. Hialeah leads the county in new registrations.</div></div>
+  </div>
+</div>
+</div>
+
+<!-- SOCIAL CAL -->
+<div class="tino-overlay" id="socialcalModal">
+<div class="tino-modal">
+  <div class="modal-hdr">SOCIAL MEDIA CALENDAR<button onclick="closeModal('socialcalModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="f-row"><label>Date</label><input class="f-inp" id="sc-date" type="date"></div>
+    <div class="f-row"><label>Platform</label><select class="f-sel" id="sc-platform"><option>Instagram</option><option>Facebook</option><option>TikTok</option></select></div>
+    <div class="f-row"><label>Caption/Topic</label><input class="f-inp" id="sc-caption" placeholder="Post topic..."></div>
+    <button class="modal-btn" onclick="addSocialPost()" style="margin-top:8px;">ADD TO CALENDAR</button>
+    <div id="sc-list" style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px;">
+      <div style="display:flex;gap:8px;padding:4px 0;border-bottom:1px solid rgba(72,255,130,0.06);font-size:8px;"><span style="color:var(--green);">Jun 6</span><span style="color:var(--blue);">Instagram</span><span style="color:var(--green2);flex:1;">5 reasons Miami businesses need websites</span></div>
+      <div style="display:flex;gap:8px;padding:4px 0;border-bottom:1px solid rgba(72,255,130,0.06);font-size:8px;"><span style="color:var(--green);">Jun 7</span><span style="color:var(--blue);">Instagram</span><span style="color:var(--green2);flex:1;">Package comparison carousel</span></div>
+      <div style="display:flex;gap:8px;padding:4px 0;font-size:8px;"><span style="color:var(--green);">Jun 8</span><span style="color:var(--blue);">Instagram</span><span style="color:var(--green2);flex:1;">Bilingual website benefits</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="tino-overlay" id="onboardModal">
+<div class="tino-modal">
+  <div class="modal-hdr">CLIENT ONBOARDING<button onclick="closeModal('onboardModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="check-item"><input type="checkbox"><span>Send welcome email with next steps</span></div>
+    <div class="check-item"><input type="checkbox"><span>Collect business info (name, logo, colors, photos)</span></div>
+    <div class="check-item"><input type="checkbox"><span>Set up project in Lovable</span></div>
+    <div class="check-item"><input type="checkbox"><span>Build website draft</span></div>
+    <div class="check-item"><input type="checkbox"><span>Send draft for client review</span></div>
+    <div class="check-item"><input type="checkbox"><span>Apply revisions (max 2 rounds)</span></div>
+    <div class="check-item"><input type="checkbox"><span>Connect domain</span></div>
+    <div class="check-item"><input type="checkbox"><span>Set up Google Business Profile</span></div>
+    <div class="check-item"><input type="checkbox"><span>Add booking system (Growth+)</span></div>
+    <div class="check-item"><input type="checkbox"><span>Add AI chat (Growth+)</span></div>
+    <div class="check-item"><input type="checkbox"><span>Final walkthrough with client</span></div>
+    <div class="check-item"><input type="checkbox"><span>Request testimonial/review</span></div>
+    <div class="check-item"><input type="checkbox"><span>Add to portfolio</span></div>
+    <div class="check-item"><input type="checkbox"><span>Collect final payment</span></div>
+  </div>
+</div>
+</div>
+
+<!-- EXPENSES -->
+<div class="tino-overlay" id="vendorModal">
+<div class="tino-modal">
+  <div class="modal-hdr">EXPENSE TRACKER<button onclick="closeModal('vendorModal')">✕</button></div>
+  <div class="modal-body">
+    <div id="vendor-list">
+      <div class="money-row"><span class="money-lbl">Namecheap Email</span><span class="money-val neg">-$15/yr</span></div>
+      <div class="money-row"><span class="money-lbl">Lovable Pro</span><span class="money-val neg">-$25/mo</span></div>
+      <div class="money-row"><span class="money-lbl">Tidio (Free tier)</span><span class="money-val">$0/mo</span></div>
+    </div>
+    <div class="f-row" style="margin-top:10px;"><label>Name</label><input class="f-inp" id="vend-name" placeholder="Expense name"></div>
+    <div class="f-row"><label>Cost</label><input class="f-inp" id="vend-cost" placeholder="e.g. $12/yr"></div>
+    <div class="f-row"><label>Due Date</label><input class="f-inp" id="vend-due" type="date"></div>
+    <button class="modal-btn" onclick="addVendor()" style="margin-top:8px;">ADD EXPENSE</button>
+  </div>
+</div>
+</div>
+
+<!-- RETENTION -->
+<div class="tino-overlay" id="retentionModal">
+<div class="tino-modal">
+  <div class="modal-hdr">RETENTION ALERTS<button onclick="closeModal('retentionModal')">✕</button></div>
+  <div class="modal-body">
+    <div style="font-size:8px;color:var(--dim);margin-bottom:12px;">No clients yet — activates after first sign.</div>
+    <div style="background:rgba(72,255,130,0.04);border:1px solid var(--border);padding:10px;font-size:8px;color:var(--green2);line-height:1.8;">
+      <b style="color:var(--green);">RETENTION RULES:</b><br>
+      → Check in every 30 days minimum<br>
+      → Send monthly report by day 28<br>
+      → Offer upsell at 60-day mark<br>
+      → Ask for referral at 90-day mark<br>
+      → Never let 45+ days pass without contact
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- NETWORK -->
+<div class="tino-overlay" id="networkModal">
+<div class="tino-modal">
+  <div class="modal-hdr">NETWORK & CONTACTS<button onclick="closeModal('networkModal')">✕</button></div>
+  <div class="modal-body">
+    <div class="money-row"><span class="money-lbl" style="color:var(--green);">Cecilia Carolini</span><span class="money-val" style="font-size:8px;">Mom — Interior Design — carolinidesign.com</span></div>
+    <div class="money-row"><span class="money-lbl" style="color:var(--green);">Carlos Carolini</span><span class="money-val" style="font-size:8px;">Dad — Construction — 305-215-1361</span></div>
+    <div class="f-row" style="margin-top:10px;"><label>Name</label><input class="f-inp" id="net-name" placeholder="Contact name"></div>
+    <div class="f-row"><label>Role</label><input class="f-inp" id="net-role" placeholder="e.g. Referral partner"></div>
+    <div class="f-row"><label>Contact</label><input class="f-inp" id="net-contact" placeholder="Phone or email"></div>
+    <button class="modal-btn" onclick="addNetworkContact()" style="margin-top:8px;">ADD CONTACT</button>
+    <div id="net-list" style="margin-top:10px;"></div>
+  </div>
+</div>
+</div>
+
+<!-- AI CHAT MODAL -->
+<div class="tino-overlay" id="aiChatModal">
+<div class="tino-modal" style="max-width:600px;">
+  <div class="modal-hdr">ASK T.I.N.O. AI<button onclick="closeModal('aiChatModal')">✕</button></div>
+  <div class="modal-body">
+    <div id="aiChatHistory" style="height:300px;overflow-y:auto;margin-bottom:12px;border:1px solid var(--border);padding:10px;font-size:9px;line-height:1.8;">
+      <div style="color:var(--green2);">T.I.N.O. AI is ready. Ask me anything about your business, pitch advice, pricing, or strategy.</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <input class="f-inp" id="aiChatInput" placeholder="Ask T.I.N.O. anything..." onkeydown="if(event.key==='Enter') sendAIMessage()">
+      <button class="modal-btn" onclick="sendAIMessage()" style="white-space:nowrap;">SEND</button>
+    </div>
+    <div id="aiChatStatus" style="font-size:7px;color:var(--dim);margin-top:5px;letter-spacing:1px;"></div>
+  </div>
+</div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────
+const S = {
+  outreach: parseInt(localStorage.getItem('tino_outreach') || '0'),
+  streak:   parseInt(localStorage.getItem('tino_streak')   || '0'),
+  revenue:  parseInt(localStorage.getItem('tino_revenue')  || '0'),
+  leads:    JSON.parse(localStorage.getItem('tino_leads')  || '[]'),
+  wins:     JSON.parse(localStorage.getItem('tino_wins')   || '[]'),
+  pomo:     { running:false, mode:'work', timeLeft:25*60, interval:null }
+};
+function save(){ localStorage.setItem('tino_outreach',S.outreach); localStorage.setItem('tino_streak',S.streak); localStorage.setItem('tino_revenue',S.revenue); localStorage.setItem('tino_leads',JSON.stringify(S.leads)); localStorage.setItem('tino_wins',JSON.stringify(S.wins)); }
+
+// ── BOOT ──────────────────────────────────────
+const bootLines = [
+  'LOADING CORE SYSTEMS','CONNECTING TO MIAMI GRID','INITIALIZING LEAD ENGINE',
+  'SYNCING CRM DATABASE','LOADING PITCH SCRIPTS','ACTIVATING RADAR',
+  'CALIBRATING WEATHER NODE','LOADING 50+ TOOLS','ALL SYSTEMS NOMINAL'
+];
+let bootIdx=0, bootPct=0;
+function bootStep(){
+  if(bootIdx>=bootLines.length){ finishBoot(); return; }
+  const el=document.createElement('div');
+  el.className='boot-line'; el.innerHTML=bootLines[bootIdx]+'<span class="ok">OK</span>';
+  document.getElementById('bootLines').appendChild(el);
+  setTimeout(()=>el.classList.add('show'),10);
+  bootIdx++; bootPct=Math.round((bootIdx/bootLines.length)*100);
+  document.getElementById('bootFill').style.width=bootPct+'%';
+  document.getElementById('bootPct').textContent=bootPct+'%';
+  setTimeout(bootStep, bootIdx===bootLines.length?400:180);
+}
+function finishBoot(){
+  setTimeout(()=>{
+    document.getElementById('boot').classList.add('hidden');
+    setTimeout(()=>document.getElementById('boot').remove(),900);
+    initAll();
+  },500);
+}
+setTimeout(bootStep,400);
+
+// ── INIT ──────────────────────────────────────
+function initAll(){
+  initClock(); initRadar(); initWeather(); initLog(); initTicker();
+  initChecklist(); updateRevUI(); updateOutreachUI(); updateGoalCd();
+  renderLeads();
+  setTimeout(()=>{ animMissionBar(0); animXP(0); },300);
+  setInterval(updateGoalCd,60000);
+  const notes=document.getElementById('quick-notes');
+  notes.value=localStorage.getItem('tino_notes')||'';
+  notes.addEventListener('blur',()=>localStorage.setItem('tino_notes',notes.value));
+}
+
+// ── CLOCK ──────────────────────────────────────
+let startTime=Date.now();
+function initClock(){
+  const days=['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+  const months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function getGreeting(h){
+    if(h<12) return 'GOOD MORNING, AGUSTIN';
+    if(h<17) return 'GOOD AFTERNOON, AGUSTIN';
+    if(h<21) return 'GOOD EVENING, AGUSTIN';
+    return 'BURNING MIDNIGHT OIL, AGUSTIN';
+  }
+  function tick(){
+    const n=new Date();
+    const h=String(n.getHours()).padStart(2,'0');
+    const m=String(n.getMinutes()).padStart(2,'0');
+    const s=String(n.getSeconds()).padStart(2,'0');
+    document.getElementById('mainClock').textContent=h+':'+m+':'+s;
+    document.getElementById('bbTime').textContent=h+':'+m;
+    document.getElementById('mainDate').textContent=days[n.getDay()]+' / '+months[n.getMonth()]+' '+n.getDate()+' / '+n.getFullYear();
+    document.getElementById('mainGreeting').textContent=getGreeting(n.getHours());
+    const up=Math.floor((Date.now()-startTime)/1000);
+    const uh=String(Math.floor(up/3600)).padStart(2,'0');
+    const um=String(Math.floor((up%3600)/60)).padStart(2,'0');
+    const us=String(up%60).padStart(2,'0');
+    document.getElementById('uptime').textContent=uh+':'+um+':'+us;
+  }
+  tick(); setInterval(tick,1000);
+}
+
+// ── RADAR ──────────────────────────────────────
+function initRadar(){
+  const c=document.getElementById('radarCanvas');
+  const ctx=c.getContext('2d');
+  let angle=0;
+  const dots=[{a:0.4,r:0.35},{a:1.2,r:0.6},{a:2.1,r:0.45},{a:3.5,r:0.7},{a:4.8,r:0.3},{a:5.6,r:0.55}];
+  function draw(){
+    const W=c.width,H=c.height,cx=W/2,cy=H/2,R=cx-10;
+    ctx.clearRect(0,0,W,H);
+    // rings
+    for(let i=1;i<=4;i++){
+      ctx.beginPath(); ctx.arc(cx,cy,R*(i/4),0,Math.PI*2);
+      ctx.strokeStyle='rgba(72,255,130,0.12)'; ctx.lineWidth=1; ctx.stroke();
+    }
+    // cross
+    ctx.strokeStyle='rgba(72,255,130,0.1)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(cx,cy-R); ctx.lineTo(cx,cy+R); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx-R,cy); ctx.lineTo(cx+R,cy); ctx.stroke();
+    // sweep
+    const grad=ctx.createConicalGradient?null:null;
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(angle);
+    const sg=ctx.createLinearGradient(0,0,R,0);
+    sg.addColorStop(0,'rgba(72,255,130,0)'); sg.addColorStop(1,'rgba(72,255,130,0.35)');
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.arc(0,0,R,-Math.PI/6,0); ctx.closePath();
+    ctx.fillStyle=sg; ctx.fill(); ctx.restore();
+    // sweep line
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(angle);
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(R,0);
+    ctx.strokeStyle='rgba(72,255,130,0.8)'; ctx.lineWidth=2; ctx.stroke(); ctx.restore();
+    // dots
+    dots.forEach(d=>{
+      const diff=((angle-d.a)%(Math.PI*2)+Math.PI*2)%(Math.PI*2);
+      if(diff<Math.PI/3){
+        const alpha=1-(diff/(Math.PI/3));
+        const x=cx+Math.cos(d.a)*R*d.r, y=cy+Math.sin(d.a)*R*d.r;
+        ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2);
+        ctx.fillStyle=`rgba(72,255,130,${alpha})`; ctx.fill();
+        ctx.beginPath(); ctx.arc(x,y,6,0,Math.PI*2);
+        ctx.strokeStyle=`rgba(72,255,130,${alpha*0.4})`; ctx.lineWidth=1; ctx.stroke();
+      }
+    });
+    // center dot
+    ctx.beginPath(); ctx.arc(cx,cy,3,0,Math.PI*2);
+    ctx.fillStyle='var(--green)'; ctx.fill();
+    angle+=0.025; requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ── WEATHER ──────────────────────────────────────
+function getWeatherIcon(desc){
+  const d=desc.toLowerCase();
+  if(d.includes('thunder')) return '⛈';
+  if(d.includes('rain')||d.includes('drizzle')) return '🌧';
+  if(d.includes('snow')) return '❄️';
+  if(d.includes('fog')||d.includes('mist')) return '🌫';
+  if(d.includes('overcast')) return '☁️';
+  if(d.includes('cloudy')) return '⛅';
+  if(d.includes('clear')||d.includes('sunny')) return '☀️';
+  return '🌤';
+}
+async function initWeather(){
+  try{
+    const r=await fetch('https://wttr.in/Miami?format=j1');
+    const d=await r.json();
+    const c=d.current_condition[0];
+    const temp=c.temp_F;
+    const desc=c.weatherDesc[0].value;
+    const icon=getWeatherIcon(desc);
+    document.getElementById('weatherTemp').textContent=temp+'°F';
+    document.getElementById('weatherDesc').textContent=desc.toUpperCase();
+    if(document.getElementById('weatherIcon')) document.getElementById('weatherIcon').textContent=icon;
+    if(document.getElementById('weatherInlineTemp')) document.getElementById('weatherInlineTemp').textContent=temp+'°F';
+    if(document.getElementById('weatherInlineDesc')) document.getElementById('weatherInlineDesc').textContent=desc.toUpperCase();
+    addLog('WEATHER','ok',icon+' Miami '+temp+'°F — '+desc);
+  }catch(e){ addLog('WEATHER','warn','Weather feed offline'); }
+}
+
+// ── LOG ──────────────────────────────────────
+const LOG_MSGS=[
+  ['ok','SYSTEM BOOT COMPLETE — ALL MODULES LOADED'],
+  ['ok','TINO DIGITAL SYSTEMS — MIAMI FL — ONLINE'],
+  ['ok','REVENUE TRACKER INITIALIZED'],
+  ['ok','LEAD PIPELINE SYNCHRONIZED'],
+  ['warn','0 CLIENTS SIGNED — OUTREACH REQUIRED'],
+  ['warn','NAMECHEAP EMAIL RENEWAL — JUL 2 2026'],
+  ['ok','CALENDLY BOOKING SYSTEM — ACTIVE'],
+  ['ok','GOOGLE BUSINESS PROFILE — LIVE'],
+  ['ok','INSTAGRAM — 7 POSTS — @TINODIGITALSYSTEMS'],
+  ['ok','TINODIGITALSYSTEMS.COM — LIVE'],
+  ['warn','ANTHROPIC API — NEEDS $5 CREDIT TO ACTIVATE AI FEATURES'],
+  ['ok','CRM — GOOGLE SHEETS — CONNECTED'],
+  ['ok','OUTREACH TARGET LIST — 48 BUSINESSES IDENTIFIED'],
+  ['ok','JUNE 6 OUTREACH DAY — MISSION ACTIVE'],
+];
+function addLog(src,type,msg){
+  const log=document.getElementById('diagLog');
+  const d=new Date();
+  const t=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0');
+  const el=document.createElement('div');
+  el.className='log-line';
+  el.innerHTML=`<span class="log-t">[${t}]</span><span class="log-${type}">[${type.toUpperCase()}]</span><span class="log-msg">${msg}</span>`;
+  log.appendChild(el);
+  log.scrollTop=log.scrollHeight;
+}
+function initLog(){
+  let i=0;
+  function next(){ if(i<LOG_MSGS.length){ addLog('SYS',LOG_MSGS[i][0],LOG_MSGS[i][1]); i++; setTimeout(next,250); } }
+  next();
+  setInterval(()=>{
+    const live=['SCANNING HIALEAH SECTOR','PIPELINE HEALTH: NOMINAL','RADAR SWEEP ACTIVE','CHECKING LEAD STATUS','WEATHER NOMINAL — MIAMI FL','OUTREACH WINDOW OPEN'];
+    addLog('LIVE','ok',live[Math.floor(Math.random()*live.length)]);
+  },8000);
+}
+
+// ── TICKER ──────────────────────────────────────
+function initTicker(){
+  const items=['TINO DIGITAL SYSTEMS — MIAMI FL','WEBSITE + AI CHAT + BOOKING STARTING AT $680','BILINGUAL EN/ES','1-2 WEEK DELIVERY','JUNE 6 — FIRST OUTREACH DAY','48 TARGETS IDENTIFIED IN HIALEAH','TINODIGITALSYSTEMS.COM — LIVE','GOOGLE BUSINESS PROFILE — ACTIVE','3 CERTIFICATIONS EARNED','@TINODIGITALSYSTEMS ON INSTAGRAM','STARTER $680 + $50/MO','GROWTH $820 + $75/MO','PREMIUM $1,500 + $200/MO','786-671-9482','HELLO@TINODIGITALSYSTEMS.COM'];
+  const track=document.getElementById('tickerTrack');
+  const html=items.map(i=>`<span class="ticker-item">${i}<span style="color:rgba(72,255,130,0.2);padding:0 5px;">◆</span></span>`).join('');
+  track.innerHTML=html+html;
+}
+
+// ── CHECKLIST ──────────────────────────────────────
+function initChecklist(){
+  const checks=JSON.parse(localStorage.getItem('tino_checks')||'[]');
+  document.querySelectorAll('.check-item').forEach((el,i)=>{
+    if(checks[i]){ el.querySelector('input').checked=true; el.classList.add('done'); }
+    el.querySelector('input').addEventListener('change',saveChecklist);
+  });
+}
+function toggleCheck(el){
+  el.classList.toggle('done');
+  el.querySelector('input').checked=!el.classList.contains('done')?false:true;
+  saveChecklist();
+}
+function saveChecklist(){
+  const checks=[...document.querySelectorAll('.check-item input')].map(i=>i.checked);
+  localStorage.setItem('tino_checks',JSON.stringify(checks));
+}
+
+// ── OUTREACH ──────────────────────────────────────
+function updateOutreachUI(){
+  document.getElementById('outreachCount').textContent=S.outreach;
+  const pct=Math.min(100,(S.outreach/10)*100);
+  document.getElementById('outreachBar').style.width=pct+'%';
+  // streak with fire
+  const streakEl=document.getElementById('streakNum');
+  streakEl.textContent=S.streak;
+  const fireEl=document.getElementById('streakFire');
+  if(fireEl) fireEl.style.display=S.streak>=7?'inline':'none';
+}
+function logOutreach(){
+  S.outreach=Math.min(S.outreach+1,99); save(); updateOutreachUI();
+  addLog('OUTREACH','ok','Walk-in logged — Total: '+S.outreach+'/10');
+  showNotif('OUTREACH LOGGED — '+S.outreach+'/10 TODAY','success');
+  if(S.outreach>=10) showNotif('DAILY GOAL REACHED — 10 OUTREACHES!','goal');
+}
+function resetOutreach(){ S.outreach=0; save(); updateOutreachUI(); addLog('OUTREACH','warn','Outreach counter reset'); }
+function addStreak(){ S.streak++; save(); updateOutreachUI(); addLog('STREAK','ok','Streak: '+S.streak+' days'); showNotif('STREAK: '+S.streak+' DAYS — KEEP GOING!','goal'); }
+function resetStreak(){ S.streak=0; save(); updateOutreachUI(); }
+
+// ── ANIMATED COUNTER ──────────────────────────────────────
+function animateCount(el, from, to, prefix='', suffix='', duration=600){
+  const start=performance.now();
+  function update(time){
+    const elapsed=time-start;
+    const progress=Math.min(elapsed/duration,1);
+    const ease=1-Math.pow(1-progress,3);
+    const current=Math.round(from+(to-from)*ease);
+    el.textContent=prefix+current.toLocaleString()+suffix;
+    if(progress<1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+// ── REVENUE ──────────────────────────────────────
+function updateRevUI(){
+  const r=S.revenue;
+  document.getElementById('statRevenue').textContent='$'+r.toLocaleString();
+  document.getElementById('revTotal').textContent='$'+r.toLocaleString();
+  document.getElementById('rev40').textContent='$'+Math.floor(r*0.4).toLocaleString();
+  document.getElementById('rev25').textContent='$'+Math.floor(r*0.25).toLocaleString();
+  document.getElementById('rev20').textContent='$'+Math.floor(r*0.2).toLocaleString();
+  document.getElementById('rev15').textContent='$'+Math.floor(r*0.15).toLocaleString();
+  const pct=Math.min(100,(r/680)*100);
+  animMissionBar(pct);
+  document.getElementById('missionNote').textContent=Math.round(pct)+'% complete'+(r>=680?' — FIRST CLIENT GOAL MET! 🎉':' — keep pushing');
+  const xp=Math.min(100,Math.floor(pct));
+  animXP(xp);
+  document.getElementById('xpNote').textContent=xp+' / 100 XP'+(xp>=100?' — LEVEL UP! CLOSE YOUR FIRST CLIENT!':' — Close first client to rank up');
+  document.getElementById('statClients').textContent=r>=680?Math.floor(r/680):'0';
+}
+function animMissionBar(pct){ document.getElementById('missionFill').style.width=pct+'%'; }
+function animXP(pct){ document.getElementById('xpFill').style.width=pct+'%'; }
+function logRevenue(){
+  const amt=parseInt(document.getElementById('rev-amount').value)||0;
+  const client=document.getElementById('rev-client').value||'Client';
+  if(!amt){ showNotif('ENTER AN AMOUNT',''); return; }
+  const prev=S.revenue;
+  S.revenue+=amt; save(); updateRevUI();
+  // animate counter
+  const revEl=document.getElementById('statRevenue');
+  animateCount(revEl,prev,S.revenue,'$');
+  // glow card
+  const card=revEl.closest('.stat-card');
+  card.classList.remove('glow-gold');
+  void card.offsetWidth;
+  card.classList.add('glow-gold');
+  setTimeout(()=>card.classList.remove('glow-gold'),800);
+  addLog('REVENUE','money','$'+amt.toLocaleString()+' logged from '+client);
+  showNotif('💰 $'+amt.toLocaleString()+' LOGGED — PAY $'+Math.floor(amt*0.4)+' | TAX $'+Math.floor(amt*0.25),'money');
+  closeModal('revenueModal');
+  document.getElementById('rev-amount').value='';
+  document.getElementById('rev-client').value='';
+}
+
+// ── LEADS ──────────────────────────────────────
+const TAG_MAP={'HOT':'lt-hot','INTERESTED':'lt-interested','FOLLOW UP':'lt-followup','CONTACTED':'lt-contacted','NOT INTERESTED':'lt-contacted'};
+const STATUS_CYCLE=['HOT','INTERESTED','FOLLOW UP','CONTACTED','NOT INTERESTED'];
+
+function renderLeads(){
+  const list=document.getElementById('leadList');
+  list.innerHTML='';
+  if(S.leads.length===0){
+    list.innerHTML='<div style="font-size:8px;color:var(--dim);padding:4px 0;letter-spacing:1px;">No leads yet — add your first lead after a call</div>';
+    document.getElementById('statLeads').textContent='0';
+    return;
+  }
+  S.leads.forEach((lead,i)=>{
+    const el=document.createElement('div');
+    el.className='lead-item';
+    el.innerHTML=`<span class="lead-biz">${lead.biz}</span><span class="lead-tag lead-status ${TAG_MAP[lead.status]||'lt-contacted'}" onclick="cycleStatus(this,${i})" title="Click to change status">${lead.status}</span><button class="lead-del" onclick="deleteLead(${i})">✕</button>`;
+    list.appendChild(el);
+  });
+  document.getElementById('statLeads').textContent=S.leads.length;
+}
+function cycleStatus(el,idx){
+  const cur=el.textContent;
+  const next=STATUS_CYCLE[(STATUS_CYCLE.indexOf(cur)+1)%STATUS_CYCLE.length];
+  S.leads[idx].status=next; save();
+  el.textContent=next;
+  el.className='lead-tag lead-status '+(TAG_MAP[next]||'lt-contacted');
+}
+function deleteLead(idx){
+  S.leads.splice(idx,1); save();
+  renderLeads();
+  addLog('LEAD','warn','Lead removed');
+}
+function addLead(){
+  const biz=document.getElementById('lead-biz').value;
+  if(!biz){ showNotif('ENTER BUSINESS NAME',''); return; }
+  const status=document.getElementById('lead-status').value;
+  S.leads.push({biz:biz.toUpperCase(),status}); save();
+  renderLeads();
+  // glow leads card
+  const leadsEl=document.getElementById('statLeads');
+  const card=leadsEl.closest('.stat-card');
+  card.classList.remove('glow-green');
+  void card.offsetWidth;
+  card.classList.add('glow-green');
+  setTimeout(()=>card.classList.remove('glow-green'),800);
+  addLog('LEAD','ok','New lead: '+biz+' — '+status);
+  closeModal('leadModal');
+  ['lead-biz','lead-phone','lead-notes'].forEach(id=>document.getElementById(id).value='');
+}
+
+// ── FOLLOW UP QUEUE ──────────────────────────────────────
+function addFollowUp(){
+  const item=prompt('Follow-up (e.g. "Call back Panda Barbershop Thu"):');
+  if(!item) return;
+  const queue=document.getElementById('followUpQueue');
+  if(queue.style.color==='var(--dim)'||queue.children.length===0){
+    queue.innerHTML='';
+    queue.style.color='';
+  }
+  const el=document.createElement('div');
+  el.style.cssText='font-size:8px;color:var(--gold);padding:3px 0;border-bottom:1px solid rgba(72,255,130,0.06);display:flex;justify-content:space-between;align-items:center;';
+  el.innerHTML=`<span>→ ${item}</span><button onclick="this.parentElement.remove()" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:9px;">✕</button>`;
+  queue.appendChild(el);
+}
+
+// ── WINS ──────────────────────────────────────
+function addWin(){
+  const text=document.getElementById('win-text').value;
+  if(!text) return;
+  const d=new Date();
+  const dateStr=d.toLocaleDateString('en-US',{month:'short',year:'numeric'});
+  const list=document.getElementById('winList');
+  const el=document.createElement('div');
+  el.className='win-row';
+  el.innerHTML=`<span class="win-text">${text}</span><span class="win-date">${dateStr}</span>`;
+  list.prepend(el);
+  S.wins.push({text,date:dateStr}); save();
+  addLog('WIN','ok','WIN LOGGED: '+text);
+  showNotif('WIN LOGGED 🏆','goal');
+  document.getElementById('win-text').value='';
+}
+
+// ── GOAL COUNTDOWN ──────────────────────────────────────
+function updateGoalCd(){
+  const target=new Date('2026-06-30T23:59:59');
+  const now=new Date();
+  const diff=target-now;
+  if(diff<=0){ document.getElementById('goalCd').textContent='GOAL DATE PASSED'; return; }
+  const d=Math.floor(diff/86400000);
+  const h=Math.floor((diff%86400000)/3600000);
+  const m=Math.floor((diff%3600000)/60000);
+  document.getElementById('goalCd').textContent=d+'d '+h+'h '+m+'m';
+}
+
+// ── INVOICE ──────────────────────────────────────
+function generateInvoice(){
+  const client=document.getElementById('inv-client').value||'Client';
+  const email=document.getElementById('inv-email').value||'';
+  const service=document.getElementById('inv-service').value;
+  const amount=document.getElementById('inv-amount').value||'0';
+  const retainer=document.getElementById('inv-retainer').value||'0';
+  const due=document.getElementById('inv-due').value||'Upon receipt';
+  const notes=document.getElementById('inv-notes').value||'';
+  const invNum='TDS-'+Date.now().toString().slice(-6);
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Invoice ${invNum}</title><style>
+    body{font-family:monospace;background:#fff;color:#111;padding:40px;max-width:700px;margin:0 auto;}
+    h1{font-size:28px;letter-spacing:3px;color:#061a10;}
+    .green{color:#48ff82;} .dim{color:#666;font-size:12px;} 
+    table{width:100%;border-collapse:collapse;margin:20px 0;}
+    th{background:#061a10;color:#48ff82;padding:8px;text-align:left;font-size:12px;letter-spacing:2px;}
+    td{padding:8px;border-bottom:1px solid #eee;font-size:13px;}
+    .total{font-size:18px;font-weight:bold;color:#061a10;}
+    .footer{margin-top:30px;padding-top:20px;border-top:2px solid #061a10;font-size:12px;color:#666;}
+    @media print{body{padding:20px;}}
+  </style></head><body>
+    <h1>TINO DIGITAL SYSTEMS</h1>
+    <p class="dim">Miami, FL | hello@tinodigitalsystems.com | 786-671-9482 | tinodigitalsystems.com</p>
+    <hr style="border-color:#061a10;margin:20px 0;">
+    <p><b>INVOICE #${invNum}</b></p>
+    <p>Bill To: <b>${client}</b>${email?' | '+email:''}</p>
+    <p>Date: ${new Date().toLocaleDateString()} | Due: ${due}</p>
+    <table>
+      <tr><th>SERVICE</th><th>AMOUNT</th></tr>
+      <tr><td>${service}</td><td>$${parseInt(amount).toLocaleString()}</td></tr>
+      ${retainer>0?`<tr><td>Monthly Retainer</td><td>$${parseInt(retainer).toLocaleString()}/mo</td></tr>`:''}
+      ${notes?`<tr><td colspan="2" style="font-size:12px;color:#666;">${notes}</td></tr>`:''}
+    </table>
+    <p class="total">TOTAL DUE: $${parseInt(amount).toLocaleString()}${retainer>0?' + $'+parseInt(retainer)+'/mo':''}</p>
+    <div class="footer">
+      <p>Payment accepted via: Zelle (786-671-9482) | Stripe | Cash</p>
+      <p>Thank you for your business. Questions? hello@tinodigitalsystems.com</p>
+      <p style="margin-top:10px;font-size:10px;color:#999;">Tino Digital Systems — Miami's Youngest Digital Agency</p>
+    </div>
+    <script>window.print();<\/script>
+  </body></html>`);
+  addLog('INVOICE','money','Invoice '+invNum+' generated for '+client+' — $'+amount);
+  closeModal('invoiceModal');
+}
+
+// ── PROPOSAL ──────────────────────────────────────
+function generateProposal(){
+  const biz=document.getElementById('prop-biz').value||'Your Business';
+  const owner=document.getElementById('prop-owner').value||'there';
+  const pkg=document.getElementById('prop-pkg').value;
+  const addons=document.getElementById('prop-addons').value;
+  const industry=document.getElementById('prop-industry').value||'business';
+  const out=document.getElementById('proposalOutput');
+  out.style.display='block';
+  out.innerHTML=`<div style="color:var(--green);letter-spacing:1px;line-height:2;">
+<b>PROPOSAL FOR: ${biz.toUpperCase()}</b><br><br>
+Hi ${owner},<br><br>
+Thank you for your time. Here is my proposal for ${biz}:<br><br>
+<b>RECOMMENDED PACKAGE:</b> ${pkg}<br>
+${addons?'<b>ADD-ONS:</b> '+addons+'<br>':''}<br>
+<b>WHAT YOU GET:</b><br>
+• Professional custom website designed for your ${industry}<br>
+• Mobile-friendly — looks perfect on phones and tablets<br>
+• Contact form so customers can reach you instantly<br>
+• Google Maps integration — show up locally<br>
+• Bilingual option available (EN/ES) for +$200<br>
+• Live in 1-2 weeks<br><br>
+<b>WHY TINO DIGITAL SYSTEMS:</b><br>
+• Miami-based — we know your market<br>
+• HubSpot & Semrush certified<br>
+• No bloated agency fees<br>
+• Direct communication — no middlemen<br><br>
+Ready to move forward? Book a free 15-minute call at tinodigitalsystems.com<br><br>
+— Agustin Carolini | Tino Digital Systems<br>
+786-671-9482 | hello@tinodigitalsystems.com
+</div>`;
+  addLog('PROPOSAL','ok','Proposal generated for '+biz);
+}
+
+// ── AUDIT ──────────────────────────────────────
+function runAudit(){
+  const url=document.getElementById('audit-url').value;
+  const biz=document.getElementById('audit-biz').value||'This business';
+  const out=document.getElementById('auditResult');
+  out.style.display='block';
+  const score=Math.floor(Math.random()*30)+20;
+  const issues=['No SSL certificate detected','No Google Business Profile','Not mobile optimized','Page load speed: SLOW','No meta descriptions','No local SEO keywords','No schema markup','Social media not linked'];
+  const shown=issues.slice(0,5);
+  out.innerHTML=`<div style="color:var(--green);line-height:2;font-size:9px;">
+<b>AUDIT REPORT: ${biz.toUpperCase()}</b><br>
+URL: ${url}<br>
+Overall Score: <span style="color:var(--red);font-size:14px;">${score}/100</span><br><br>
+<b>ISSUES FOUND:</b><br>
+${shown.map(i=>'⚠ '+i).join('<br>')}<br><br>
+<span style="color:var(--green2);">Recommendation: A professional website from Tino Digital Systems would address all these issues starting at $680.</span>
+</div>`;
+  addLog('AUDIT','warn','Site audit for '+biz+' — Score: '+score+'/100');
+}
+
+// ── POMODORO ──────────────────────────────────────
+function updatePomoDisplay(){
+  const m=Math.floor(S.pomo.timeLeft/60);
+  const s=S.pomo.timeLeft%60;
+  document.getElementById('pomoClock').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  document.getElementById('pomoMode').textContent=S.pomo.mode==='work'?'WORK SESSION':'BREAK TIME';
+}
+function pomoStart(){
+  if(S.pomo.running) return;
+  S.pomo.running=true;
+  S.pomo.interval=setInterval(()=>{
+    S.pomo.timeLeft--;
+    updatePomoDisplay();
+    if(S.pomo.timeLeft<=0){
+      clearInterval(S.pomo.interval); S.pomo.running=false;
+      showNotif(S.pomo.mode==='work'?'WORK SESSION COMPLETE — TAKE A BREAK!':'BREAK OVER — BACK TO WORK!','goal');
+      addLog('POMO','ok',(S.pomo.mode==='work'?'Work session':'Break')+' complete');
+    }
+  },1000);
+  addLog('POMO','ok','Timer started — '+(S.pomo.mode==='work'?'25 min work':'5 min break'));
+}
+function pomoPause(){ clearInterval(S.pomo.interval); S.pomo.running=false; }
+function pomoReset(){ pomoPause(); S.pomo.timeLeft=S.pomo.mode==='work'?25*60:5*60; updatePomoDisplay(); }
+function pomoSwitch(){ pomoPause(); S.pomo.mode=S.pomo.mode==='work'?'break':'work'; pomoReset(); }
+
+// ── VOICE ──────────────────────────────────────
+let recognition=null, listening=false, wakeActive=false, wakeRecognition=null;
+
+function toggleVoice(){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){ showNotif('VOICE NOT SUPPORTED — USE CHROME',''); return; }
+  if(listening){ stopListening(); return; }
+  startListening();
+}
+
+function startListening(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new SR();
+  recognition.continuous=false;
+  recognition.interimResults=false;
+  recognition.lang='en-US';
+  recognition.onstart=()=>{
+    listening=true;
+    document.getElementById('voiceBtn').textContent='🔴 LISTENING';
+    document.getElementById('voiceBtn').classList.add('listening');
+    document.getElementById('soundwave').classList.add('active');
+    showNotif('LISTENING — SPEAK NOW','success');
+  };
+  recognition.onresult=(e)=>{
+    const cmd=e.results[0][0].transcript.toLowerCase().trim();
+    addLog('VOICE','ok','Heard: "'+cmd+'"');
+    handleVoiceCmd(cmd);
+  };
+  recognition.onerror=(e)=>{
+    addLog('VOICE','warn','Error: '+e.error);
+    stopListening();
+  };
+  recognition.onend=()=>stopListening();
+  try{ recognition.start(); } catch(e){ stopListening(); }
+}
+
+function stopListening(){
+  listening=false;
+  if(recognition){ try{ recognition.stop(); }catch(e){} }
+  const btn=document.getElementById('voiceBtn');
+  if(btn){ btn.textContent='🎙 VOICE'; btn.classList.remove('listening'); }
+  document.getElementById('soundwave').classList.remove('active');
+}
+
+function handleVoiceCmd(cmd){
+  if(cmd.includes('website')||cmd.includes('site')){ window.open('https://tinodigitalsystems.com','_blank'); showNotif('OPENING WEBSITE','success'); }
+  else if(cmd.includes('calendly')||cmd.includes('booking')||cmd.includes('calendar')){ window.open('https://calendly.com/c08/free-consultation','_blank'); showNotif('OPENING CALENDLY','success'); }
+  else if(cmd.includes('crm')||cmd.includes('spreadsheet')||cmd.includes('leads')){ window.open('https://docs.google.com/spreadsheets/d/1tBLckjgIiTev13cJ0AKWjHF-vBC6mkKDtsI2Ab7--FQ','_blank'); showNotif('OPENING CRM','success'); }
+  else if(cmd.includes('invoice')){ openModal('invoiceModal'); showNotif('INVOICE GENERATOR OPEN','success'); }
+  else if(cmd.includes('pitch')){ openModal('pitchModal'); showNotif('PITCH SCRIPTS OPEN','success'); }
+  else if(cmd.includes('proposal')){ openModal('proposalModal'); showNotif('PROPOSAL GENERATOR OPEN','success'); }
+  else if(cmd.includes('outreach')||cmd.includes('visit')||cmd.includes('log')){ logOutreach(); }
+  else if(cmd.includes('make')||cmd.includes('automation')){ window.open('https://make.com','_blank'); showNotif('OPENING MAKE.COM','success'); }
+  else{ showNotif('NOT RECOGNIZED: "'+cmd+'" — TRY AGAIN',''); addLog('VOICE','warn','Unknown: '+cmd); }
+}
+
+function toggleWakeWord(){
+  if(wakeActive){ stopWakeWord(); return; }
+  startWakeWord();
+}
+
+function startWakeWord(){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){ showNotif('VOICE NOT SUPPORTED — USE CHROME',''); return; }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  wakeRecognition=new SR();
+  wakeRecognition.continuous=true;
+  wakeRecognition.interimResults=true;
+  wakeRecognition.lang='en-US';
+  wakeRecognition.onresult=(e)=>{
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const t=e.results[i][0].transcript.toLowerCase();
+      if(t.includes('tino')||t.includes('hey tino')){
+        showNotif('TINO ACTIVATED — SPEAK YOUR COMMAND','success');
+        addLog('WAKE','ok','Wake word detected');
+        setTimeout(()=>{ if(!listening) startListening(); },600);
+        break;
+      }
+    }
+  };
+  wakeRecognition.onend=()=>{ if(wakeActive){ try{ wakeRecognition.start(); }catch(e){} } };
+  wakeRecognition.onerror=()=>{ if(wakeActive){ setTimeout(()=>{ try{ wakeRecognition.start(); }catch(e){} },1000); } };
+  try{
+    wakeRecognition.start();
+    wakeActive=true;
+    const btn=document.getElementById('wakeBtn');
+    if(btn){ btn.textContent='👂 WAKE ON'; btn.style.borderColor='rgba(72,255,130,0.6)'; btn.style.color='var(--green)'; }
+    addLog('WAKE','ok','Wake word active — say "TINO" to activate');
+    showNotif('WAKE WORD ON — SAY "TINO"','success');
+  }catch(e){ addLog('WAKE','warn','Could not start wake word'); }
+}
+
+function stopWakeWord(){
+  wakeActive=false;
+  if(wakeRecognition){ try{ wakeRecognition.stop(); }catch(e){} }
+  const btn=document.getElementById('wakeBtn');
+  if(btn){ btn.textContent='👂 WAKE'; btn.style.borderColor=''; btn.style.color=''; }
+  addLog('WAKE','warn','Wake word disabled');
+  showNotif('WAKE WORD OFF','');
+}
+
+// ── COPY ──────────────────────────────────────
+function copyText(btn,text){
+  navigator.clipboard.writeText(text).then(()=>{
+    const orig=btn.textContent; btn.textContent='COPIED ✓'; btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent=orig; btn.classList.remove('copied'); },2000);
+    addLog('COPY','ok','Text copied to clipboard');
+  });
+}
+
+// ── MODALS ──────────────────────────────────────
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.tino-overlay').forEach(el=>{ el.addEventListener('click',function(e){ if(e.target===this) this.classList.remove('open'); }); });
+
+// ── NOTIF ──────────────────────────────────────
+let notifTimer=null;
+function showNotif(msg,type){
+  const n=document.getElementById('notif');
+  n.textContent=msg; n.className='notif visible '+(type||'');
+  clearTimeout(notifTimer); notifTimer=setTimeout(()=>n.className='notif',3500);
+}
+
+// ── AI RESPONSE ──────────────────────────────────────
+function closeAI(){ document.getElementById('aiResp').className='ai-response'; }
 
 
-0%
-LIVE FEED
 
-SYSTEM STATUS
-OPERATOR
-AGUSTIN C.
-AGENCY
-TINO DIGITAL
-UPTIME
-00:00:00
-MIAMI TEMP
---°F
-CONDITIONS
-LOADING
-STATUS
-ONLINE
-OUTREACH TODAY
-0
-/ 10 GOAL
+// ── AI CHAT ──────────────────────────────────────
+const aiHistory=[];
 
-+ LOG VISIT
-RESET
-LEAD TRACKER
+function openAIChat(){
+  document.getElementById('aiChatOverlay').classList.add('open');
+  document.getElementById('aiChatInput').focus();
+}
+function closeAIChat(){
+  document.getElementById('aiChatOverlay').classList.remove('open');
+}
 
-+ ADD LEAD
-DAILY CHECKLIST
+async function sendAIMessage(){
+  const input=document.getElementById('aiChatInput');
+  const msg=input.value.trim();
+  if(!msg) return;
+  input.value='';
+  addChatMessage(msg,'user');
+  aiHistory.push({role:'user',content:msg});
+  showTyping();
+  try{
+    const res=await fetch('/.netlify/functions/claude',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        system:`You are T.I.N.O. — the AI business assistant for Agustin Carolini, a 16-year-old entrepreneur in Miami running Tino Digital Systems, a web design agency. Help with pitch advice, business strategy, client handling, pricing, and motivation. Be direct and concise. Packages: Starter $680+$50/mo, Growth $820+$75/mo, Premium $1500+$200/mo.`,
+        messages:aiHistory
+      })
+    });
+    hideTyping();
+    if(res.ok){
+      let data=await res.json();
+      if(typeof data==='string') try{data=JSON.parse(data);}catch(e){}
+      const reply=data.content?.[0]?.text||data.reply||'No response.';
+      addChatMessage(reply,'ai');
+      aiHistory.push({role:'assistant',content:reply});
+    } else {
+      addChatMessage('API error — make sure the Netlify function is deployed and ANTHROPIC_API_KEY is set.','ai');
+    }
+  }catch(e){
+    hideTyping();
+    addChatMessage('Connection error. Redeploy the site with the netlify/functions folder included.','ai');
+  }
+}
 
-Review outreach list
-✕
+function addChatMessage(text,role){
+  const messages=document.getElementById('aiChatMessages');
+  const el=document.createElement('div');
+  el.className='msg msg-'+role;
+  if(role==='ai') el.innerHTML='<div class="msg-label">T.I.N.O.</div>'+text;
+  else el.textContent=text;
+  messages.appendChild(el);
+  messages.scrollTop=messages.scrollHeight;
+}
 
-Post on Instagram
-✕
-
-Check email
-✕
-
-Follow up on leads
-✕
-
-Update CRM
-✕
-
-Log revenue
-✕
-
-Make 10 calls
-✕
-+ ADD TASK
-FOLLOW-UP QUEUE
-No follow-ups yet — add leads to generate queue
-+ ADD FOLLOW-UP
-QUICK NOTES
-GOOD MORNING, AGUSTIN
-00:00:00
-LOADING...
-T.I.N.O. — TINO DIGITAL SYSTEMS — MIAMI FL
-🌤
---°F
-MIAMI
-$0
-REVENUE
-THIS MONTH
-0
-LEADS
-ACTIVE PIPELINE
-0
-CLIENTS
-SIGNED
-0%
-CLOSE RATE
-ALL TIME
+function showTyping(){
+  const messages=document.getElementById('aiChatMessages');
+  const el=document.createElement('div');
+  el.id='aiTyping';
+  el.className='msg msg-ai ai-typing';
+  el.innerHTML='<div class="ai-typing-dot"></div><div class="ai-typing-dot"></div><div class="ai-typing-dot"></div>';
+  messages.appendChild(el);
+  messages.scrollTop=messages.scrollHeight;
+}
+function hideTyping(){
+  const el=document.getElementById('aiTyping');
+  if(el) el.remove();
+}
 
 
 
-SCANNING
-MIAMI-DADE ACTIVE
-FIRST CLIENT MISSION
-$680 TARGET
+// ── TOOL CATEGORIES ──────────────────────────────────────
+function toggleCat(id){
+  const body=document.getElementById(id);
+  const cat=id.replace('cat-','');
+  const arrow=document.getElementById('arr-'+cat);
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
 
-0% complete — keep pushing
-LEVEL 1 — RECRUIT
+// ── CONTRACT ──────────────────────────────────────
+function generateContract(){
+  const client=document.getElementById('con-client').value||'Client';
+  const biz=document.getElementById('con-biz').value||'Business';
+  const pkg=document.getElementById('con-pkg').value;
+  const start=document.getElementById('con-start').value||new Date().toLocaleDateString();
+  const delivery=document.getElementById('con-delivery').value||'14';
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Contract — ${biz}</title><style>body{font-family:monospace;padding:40px;max-width:700px;margin:0 auto;color:#111;}h2{letter-spacing:3px;}hr{border-color:#061a10;margin:20px 0;}.sig{display:flex;gap:40px;margin-top:40px;}.sig-box{flex:1;border-top:1px solid #111;padding-top:8px;font-size:12px;}</style></head><body>
+    <h2>SERVICE AGREEMENT</h2><hr>
+    <p><b>Provider:</b> Tino Digital Systems — Agustin Carolini<br>Miami, FL | hello@tinodigitalsystems.com | 786-671-9482</p>
+    <p style="margin-top:10px;"><b>Client:</b> ${client} — ${biz}</p>
+    <p style="margin-top:10px;"><b>Package:</b> ${pkg}</p>
+    <p><b>Start Date:</b> ${start} | <b>Estimated Delivery:</b> ${delivery} business days</p>
+    <hr>
+    <p><b>SCOPE OF WORK:</b> Provider agrees to design and deliver a professional website per the selected package. Includes up to 2 rounds of revisions.</p>
+    <p style="margin-top:10px;"><b>PAYMENT:</b> 50% deposit due upon signing. Remaining 50% due upon project completion before site launch.</p>
+    <p style="margin-top:10px;"><b>REVISIONS:</b> Up to 2 rounds included. Additional revisions billed at $50/hr.</p>
+    <p style="margin-top:10px;"><b>OWNERSHIP:</b> Client owns all content. Provider retains right to display work in portfolio.</p>
+    <p style="margin-top:10px;"><b>TERMINATION:</b> Either party may terminate with 7 days written notice. Deposit is non-refundable.</p>
+    <div class="sig"><div class="sig-box">Provider: Agustin Carolini<br>Date: ___________</div><div class="sig-box">Client: ${client}<br>Date: ___________</div></div>
+    <script>window.print();<\/script></body></html>`);
+  addLog('CONTRACT','ok','Contract generated for '+biz);
+  closeModal('contractModal');
+}
 
-0 / 100 XP — Close first client to rank up
-🌐 WEBSITE
-📅 CALENDLY
-📊 CRM
-⚡ MAKE
-FOCUS TIMER
-25:00
-WORK SESSION
-START
-PAUSE
-RESET
-BREAK MODE
-SYSTEM LOG
+// ── REVENUE CALC ──────────────────────────────────────
+function calcRevenue(){
+  const s=parseInt(document.getElementById('rc-starter').value)||0;
+  const g=parseInt(document.getElementById('rc-growth').value)||0;
+  const p=parseInt(document.getElementById('rc-premium').value)||0;
+  const seo=parseInt(document.getElementById('rc-seo').value)||0;
+  const social=parseInt(document.getElementById('rc-social').value)||0;
+  const onetime=(s*680)+(g*820)+(p*1500)+(seo*200);
+  const monthly=(s*50)+(g*75)+(p*200)+(seo*100)+(social*300);
+  const annual=onetime+(monthly*12);
+  document.getElementById('rc-onetime').textContent='$'+onetime.toLocaleString();
+  document.getElementById('rc-monthly').textContent='$'+monthly.toLocaleString()+'/mo';
+  document.getElementById('rc-annual').textContent='$'+annual.toLocaleString();
+  document.getElementById('rc-yourcut').textContent='$'+Math.floor(annual*0.4).toLocaleString();
+}
 
->
-90-DAY PROJECTION
-Month 1 (1 client)
-$680 + $50/mo
-Month 2 (3 clients)
-$2,040 + $150/mo
-Month 3 (5 clients)
-$3,400 + $250/mo
-Recurring by Day 90
-$450/mo
-REVENUE TRACKER
-TOTAL EARNED
-$0
-PAY YOURSELF (40%)
-$0
-TAXES (25%)
-$0
-REINVEST (20%)
-$0
-EMERGENCY (15%)
-$0
-40/25/20/15 SPLIT — FIRST CLIENT UNLOCKS LLC
-+ LOG PAYMENT
-PACKAGES
-Starter $680+$50/mo
-0 sold
+// ── CLOSE RATE ──────────────────────────────────────
+function calcCloseRate(){
+  const pitches=parseInt(document.getElementById('cr-pitches').value)||0;
+  const closed=parseInt(document.getElementById('cr-closed').value)||0;
+  const rate=pitches>0?Math.round((closed/pitches)*100):0;
+  document.getElementById('cr-rate').textContent=rate+'%';
+  const adv=rate>=30?'EXCELLENT — Above industry average!':rate>=20?'GOOD — At industry average. Keep pushing.':rate>=10?'BELOW AVERAGE — Refine your pitch.':'LOW — Practice pitch 10x daily.';
+  document.getElementById('cr-advice').textContent=adv;
+}
+function logCloseSession(){
+  const pitches=document.getElementById('cr-pitches').value||0;
+  const closed=document.getElementById('cr-closed').value||0;
+  const log=document.getElementById('cr-log');
+  const d=new Date().toLocaleDateString();
+  const el=document.createElement('div');
+  el.style.cssText='padding:3px 0;border-bottom:1px solid rgba(72,255,130,0.06);';
+  el.textContent=d+' — Pitches: '+pitches+' | Closed: '+closed+' | Rate: '+Math.round((closed/pitches||0)*100)+'%';
+  log.prepend(el);
+  if(log.firstChild && log.firstChild.textContent==='No sessions yet.') log.removeChild(log.lastChild);
+  addLog('CLOSERATE','ok','Session logged: '+pitches+' pitches, '+closed+' closed');
+}
 
-Growth $820+$75/mo
-0 sold
+// ── HEALTH SCORE ──────────────────────────────────────
+function calcHealth(){
+  const boxes=document.querySelectorAll('#healthModal input[type=checkbox]');
+  const checked=[...boxes].filter(b=>b.checked).length;
+  const score=Math.round((checked/boxes.length)*100);
+  document.getElementById('healthScore').textContent=score;
+  const grade=score>=90?'ELITE — FULLY OPERATIONAL':score>=70?'STRONG — KEEP BUILDING':score>=50?'GROWING — MISSING KEY ELEMENTS':score>=30?'EARLY STAGE — FOCUS UP':'CRITICAL — ACTION REQUIRED';
+  document.getElementById('healthGrade').textContent=grade;
+}
 
-Premium $1500+$200/mo
-0 sold
+// ── CASH FLOW ──────────────────────────────────────
+function addExpense(){
+  const name=document.getElementById('cf-exp-name').value;
+  const amt=document.getElementById('cf-exp-amt').value;
+  if(!name||!amt) return;
+  const list=document.getElementById('cf-expense-list');
+  const el=document.createElement('div');
+  el.className='money-row';
+  el.innerHTML=`<span class="money-lbl">${name}</span><span class="money-val neg">-$${parseInt(amt).toLocaleString()}</span>`;
+  list.appendChild(el);
+  document.getElementById('cf-exp-name').value='';
+  document.getElementById('cf-exp-amt').value='';
+  document.getElementById('cf-revenue').textContent='$'+S.revenue.toLocaleString();
+}
 
-TOOLS
-💼 SALES
-▶
-🎯 PITCH
-▶
-👤 CLIENTS
-▶
-💰 FINANCE
-▶
-📡 INTEL
-▶
-OUTREACH STREAK
-0
-DAY STREAK
-+ DAY
-RESET
-GOAL COUNTDOWN
---d --h --m
-UNTIL FIRST CLIENT GOAL
-TARGET: JUN 30 2026
-NEXT ACTIONS
-→ Walk-in outreach today
-→ Follow up on hot leads
-→ Post on Instagram
-→ Renew Namecheap email (Jul 2)
-→ Get $5 Anthropic API credits
-→ Take real photo for About page
-🤖 ASK T.I.N.O.
+// ── SOCIAL CAL ──────────────────────────────────────
+function addSocialPost(){
+  const date=document.getElementById('sc-date').value;
+  const platform=document.getElementById('sc-platform').value;
+  const caption=document.getElementById('sc-caption').value;
+  if(!caption) return;
+  const list=document.getElementById('sc-list');
+  const el=document.createElement('div');
+  el.style.cssText='display:flex;gap:8px;padding:4px 0;border-bottom:1px solid rgba(72,255,130,0.06);font-size:8px;';
+  el.innerHTML=`<span style="color:var(--green);">${date||'TBD'}</span><span style="color:var(--blue);">${platform}</span><span style="color:var(--green2);flex:1;">${caption}</span>`;
+  list.appendChild(el);
+  document.getElementById('sc-caption').value='';
+}
 
-🎙 VOICE
-👂 WAKE
-🤖 ASK T.I.N.O.
+// ── VENDOR ──────────────────────────────────────
+function addVendor(){
+  const name=document.getElementById('vend-name').value;
+  const cost=document.getElementById('vend-cost').value;
+  const due=document.getElementById('vend-due').value;
+  if(!name) return;
+  const list=document.getElementById('vendor-list');
+  const el=document.createElement('div');
+  el.className='money-row';
+  el.innerHTML=`<span class="money-lbl">${name}</span><span class="money-val neg">${cost}</span><span style="font-size:7px;color:var(--dim);">${due||''}</span>`;
+  list.appendChild(el);
+  ['vend-name','vend-cost'].forEach(id=>document.getElementById(id).value='');
+}
+
+// ── NETWORK ──────────────────────────────────────
+function addNetworkContact(){
+  const name=document.getElementById('net-name').value;
+  const role=document.getElementById('net-role').value;
+  const contact=document.getElementById('net-contact').value;
+  if(!name) return;
+  const list=document.getElementById('net-list');
+  const el=document.createElement('div');
+  el.className='money-row';
+  el.innerHTML=`<span class="money-lbl" style="color:var(--green);">${name}</span><span style="font-size:8px;color:var(--green2);">${role}</span><span style="font-size:8px;color:var(--dim);">${contact}</span>`;
+  list.appendChild(el);
+  ['net-name','net-role','net-contact'].forEach(id=>document.getElementById(id).value='');
+}
+
+function refreshNews(){ addLog('NEWS','ok','Miami business intel refreshed'); showNotif('INTEL FEED UPDATED','success'); }
 
 
-
-
-
-
-INVOICE
-PROPOSAL
-PITCH
-OBJECTIONS
-DM SCRIPTS
-
-🌐 SITE
-📅 BOOK
-📊 CRM
-
---:--
+// ── CHECKLIST ──────────────────────────────────────
+function initChecklist(){
+  const saved=JSON.parse(localStorage.getItem('tino_checks')||'[]');
+  if(saved.length===0) return;
+  const wrap=document.getElementById('checklistWrap');
+  wrap.innerHTML='';
+  saved.forEach(item=>{
+    const el=document.createElement('div');
+    el.className='check-item'+(item.done?' done':'');
+    el.onclick=function(e){ if(e.target.classList.contains('del-check-btn')) return; toggleCheck(this); };
+    el.innerHTML=`<input type="checkbox" ${item.done?'checked':''}><span>${item.text}</span><button class="del-check-btn" onclick="deleteCheckItem(event,this)">✕</button>`;
+    wrap.appendChild(el);
+  });
+}
+function toggleCheck(el){
+  el.classList.toggle('done');
+  el.querySelector('input').checked=el.classList.contains('done');
+  saveChecklist();
+}
+function deleteCheckItem(e,btn){
+  e.stopPropagation();
+  btn.closest('.check-item').remove();
+  saveChecklist();
+}
+function addCheckItem(){
+  const task=prompt('New task:');
+  if(!task) return;
+  const wrap=document.getElementById('checklistWrap');
+  const el=document.createElement('div');
+  el.className='check-item';
+  el.onclick=function(e){ if(e.target.classList.contains('del-check-btn')) return; toggleCheck(this); };
+  el.innerHTML=`<input type="checkbox"><span>${task}</span><button class="del-check-btn" onclick="deleteCheckItem(event,this)">✕</button>`;
+  wrap.appendChild(el);
+  saveChecklist();
+}
+function saveChecklist(){
+  const checks=[...document.querySelectorAll('#checklistWrap .check-item')].map(el=>({
+    text:el.querySelector('span').textContent,
+    done:el.classList.contains('done')
+  }));
+  localStorage.setItem('tino_checks',JSON.stringify(checks));
+}
+</script>
+</body>
+</html>
